@@ -164,13 +164,15 @@ export default function BoardPage() {
   });
 
   const board = data?.board;
-  const serverColumns = data?.columns || [];
-  const displayColumns = columnsState.length > 0 ? columnsState : serverColumns;
+  const serverColumns = data?.columns;
+  const displayColumns = (columnsState.length > 0 ? columnsState : serverColumns) || [];
 
-  // Sync local state with server data when it changes
+  // Sync local state with server data — use JSON compare to avoid infinite loop
+  const serverKey = serverColumns ? JSON.stringify(serverColumns.map((c: any) => ({ id: c.id, taskCount: c.tasks?.length || 0 }))) : "";
   useEffect(() => {
-    setColumnsState(serverColumns);
-  }, [serverColumns]);
+    if (serverColumns) setColumnsState(serverColumns);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [serverKey]);
 
   const selectedTask = selectedTaskId
     ? displayColumns.flatMap((c: any) => c.tasks || []).find((t: any) => t.id === selectedTaskId) || null

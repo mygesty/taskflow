@@ -161,7 +161,7 @@ test.describe("Notifications E2E — Navigation", () => {
     await expect(page.getByRole("heading").filter({ hasText: "Notifications" })).toBeVisible({ timeout: 5_000 });
     // Should show empty state or 0 notifications
     await expect(
-      page.getByText("0 notifications").or(page.getByText("No notifications yet")),
+      page.getByText("0 notifications").or(page.getByText("No notifications yet")).first(),
     ).toBeVisible({ timeout: 5_000 });
   });
 });

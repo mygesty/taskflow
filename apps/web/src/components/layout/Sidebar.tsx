@@ -17,10 +17,10 @@ export function Sidebar() {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-card">
+    <aside className="flex w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
       <Link
         href="/dashboard"
-        className="flex h-14 items-center gap-2 border-b border-border px-4 hover:bg-muted/50 transition-colors"
+        className="flex h-14 items-center gap-2 border-b border-sidebar-border px-4 hover:bg-sidebar-accent/50 transition-colors"
       >
         <LayoutGrid className="size-5 text-primary" />
         <h1 className="text-lg font-semibold tracking-tight">TaskFlow</h1>
@@ -44,7 +44,7 @@ export function Sidebar() {
             <button
               key={ws.id}
               onClick={() => router.push(`/workspaces/${ws.id}`)}
-              className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
+              className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
             >
               <div className="flex size-5 shrink-0 items-center justify-center rounded bg-primary/10 text-xs font-bold text-primary">
                 {ws.name.charAt(0)}
@@ -60,10 +60,10 @@ export function Sidebar() {
         </nav>
       </div>
 
-      <div className="border-t border-border p-3 space-y-1">
+      <div className="border-t border-sidebar-border p-3 space-y-1">
         <button
           onClick={() => router.push("/notifications")}
-          className="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          className="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors"
         >
           <Bell className="size-4" />
           Notifications

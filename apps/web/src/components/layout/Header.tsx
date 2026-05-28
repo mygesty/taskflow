@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, LogOut, ChevronRight, CheckCheck } from "lucide-react";
+import { Bell, LogOut, ChevronRight, CheckCheck, Sun, Moon } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +10,7 @@ import {
 import { useAuthStore } from "@/stores/auth-store";
 import { useLogout } from "@/hooks/useAuth";
 import { useUnreadCount, useNotifications, useMarkRead, useMarkAllRead } from "@/hooks/useNotifications";
+import { useTheme } from "@/components/providers/ThemeProvider";
 
 const breadcrumbs: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -22,6 +23,7 @@ export function Header() {
   const pathname = usePathname();
   const { user, isAuthenticated } = useAuthStore();
   const logout = useLogout();
+  const { theme, toggle: toggleTheme } = useTheme();
   const { data: unreadCount } = useUnreadCount(isAuthenticated);
   const { data: notificationsData } = useNotifications(1, isAuthenticated);
   const markRead = useMarkRead();
@@ -45,6 +47,11 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-1">
+        {/* Theme Toggle */}
+        <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
+          {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+        </Button>
+
         {/* Notification Bell */}
         <DropdownMenu open={notifOpen} onOpenChange={setNotifOpen}>
           <DropdownMenuTrigger className="relative flex size-8 items-center justify-center rounded hover:bg-muted">
@@ -108,6 +115,10 @@ export function Header() {
             <div className="-mx-1 my-1 h-px bg-border" />
             <DropdownMenuItem onClick={() => router.push("/notifications")}>
               <Bell className="mr-2 size-4" />Notifications
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={toggleTheme}>
+              {theme === "dark" ? <Sun className="mr-2 size-4" /> : <Moon className="mr-2 size-4" />}
+              {theme === "dark" ? "Light Mode" : "Dark Mode"}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleLogout}>
               <LogOut className="mr-2 size-4" />Logout
