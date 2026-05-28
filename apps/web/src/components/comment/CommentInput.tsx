@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useCreateComment } from "@/hooks/useComments";
 import { useWorkspaceOverview } from "@/hooks/useWorkspaces";
@@ -12,6 +13,7 @@ interface CommentInputProps {
 }
 
 export function CommentInput({ taskId, workspaceId }: CommentInputProps) {
+  const t = useTranslations();
   const [content, setContent] = useState("");
   const [showMentions, setShowMentions] = useState(false);
   const [mentionFilter, setMentionFilter] = useState("");
@@ -98,7 +100,7 @@ export function CommentInput({ taskId, workspaceId }: CommentInputProps) {
           value={content}
           onChange={handleInput}
           onKeyDown={(e) => { handleKeyDown(e); handleSubmitKey(e); }}
-          placeholder="Write a comment... Use @ to mention someone"
+          placeholder={t("task.add_comment_placeholder")}
           rows={2}
           className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none resize-none"
         />
@@ -123,7 +125,7 @@ export function CommentInput({ taskId, workspaceId }: CommentInputProps) {
       <div className="flex justify-end">
         <Button size="sm" onClick={submit} disabled={!content.trim() || createComment.isPending}>
           <Send className="mr-1.5 size-3.5" />
-          {createComment.isPending ? "Sending..." : "Comment"}
+          {createComment.isPending ? t("common.sending") : t("task.comment_button")}
         </Button>
       </div>
     </div>

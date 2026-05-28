@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
 import { DndContext, useDroppable, PointerSensor, KeyboardSensor, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
 import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
@@ -31,13 +32,10 @@ const taskSchema = z.object({
   dueDate: z.string().optional().or(z.literal("")),
 });
 
-const PRIORITIES = [
-  { value: "LOW", label: "Low" }, { value: "MEDIUM", label: "Medium" },
-  { value: "HIGH", label: "High" }, { value: "URGENT", label: "Urgent" },
-];
+const PRIORITY_KEYS = ["LOW", "MEDIUM", "HIGH", "URGENT"] as const;
 
-function DroppableColumn({ col, boardWorkspaceId, selectedTaskId, onTaskClick, onAddTask, onDeleteTask }: {
-  col: any; boardWorkspaceId: string; selectedTaskId: string | null; onTaskClick: (id: string) => void; onAddTask: (colId: string) => void; onDeleteTask?: (id: string) => void;
+function DroppableColumn({ col, boardWorkspaceId, selectedTaskId, onTaskClick, onAddTask, onDeleteTask, t }: {
+  col: any; boardWorkspaceId: string; selectedTaskId: string | null; onTaskClick: (id: string) => void; onAddTask: (colId: string) => void; onDeleteTask?: (id: string) => void; t: any;
 }) {
   const { isOver, setNodeRef } = useDroppable({ id: col.id });
   const deleteCol = useDeleteColumn(col.boardId);
@@ -51,7 +49,7 @@ function DroppableColumn({ col, boardWorkspaceId, selectedTaskId, onTaskClick, o
         <DropdownMenu>
           <DropdownMenuTrigger className="flex size-6 items-center justify-center rounded hover:bg-muted"><MoreHorizontal className="size-3.5" /></DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); deleteCol.mutate({ boardId: col.boardId, columnId: col.id }); }}><Trash2 className="mr-2 size-3.5" />Delete Column</DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); deleteCol.mutate({ boardId: col.boardId, columnId: col.id }); }}><Trash2 className="mr-2 size-3.5" />{t("board.delete_column")}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -62,7 +60,7 @@ function DroppableColumn({ col, boardWorkspaceId, selectedTaskId, onTaskClick, o
       </div>
       <div className="px-2 pb-2">
         <Button variant="ghost" className="w-full justify-start text-xs text-muted-foreground" size="xs" onClick={() => onAddTask(col.id)}>
-          <Plus className="mr-1 size-3" />Add Task
+          <Plus className="mr-1 size-3" />{t("board.add_task")}
         </Button>
       </div>
     </div>
@@ -70,6 +68,7 @@ function DroppableColumn({ col, boardWorkspaceId, selectedTaskId, onTaskClick, o
 }
 
 export default function BoardPage() {
+  const t = useTranslations();
   const { id } = useParams<{ id: string }>();
   const { data, isLoading } = useBoardDetail(id);
   const addCol = useAddColumn(id);
@@ -159,8 +158,8 @@ export default function BoardPage() {
     );
   };
 
-  if (isLoading) return <AppShell><div className="flex items-center justify-center h-full text-muted-foreground text-sm">Loading...</div></AppShell>;
-  if (!board) return <AppShell><div className="flex items-center justify-center h-full text-muted-foreground text-sm">Board not found.</div></AppShell>;
+  if (isLoading) return <AppShell><div className="flex items-center justify-center h-full text-muted-foreground text-sm">{t("common.loading")}</div></AppShell>;
+  if (!board) return <AppShell><div className="flex items-center justify-center h-full text-muted-foreground text-sm">{t("board.board_not_found")}</div></AppShell>;
 
   return (
     <AppShell>
@@ -181,11 +180,12 @@ export default function BoardPage() {
                 onTaskClick={setSelectedTaskId}
                 onDeleteTask={(taskId: string) => setDeleteTaskId(taskId)}
                 onAddTask={(colId) => { setSelectedColumn(colId); reset({ title: "", description: "", priority: "MEDIUM", dueDate: "" }); setTaskDialogOpen(true); }}
+                t={t}
               />
             ))}
             <div className="flex w-72 shrink-0 items-start">
               <Button variant="ghost" className="w-full justify-start text-muted-foreground" onClick={() => setColDialogOpen(true)}>
-                <Plus className="mr-2 size-4" />Add Column
+                <Plus className="mr-2 size-4" />{t("board.add_column")}
               </Button>
             </div>
           </div>
@@ -199,9 +199,9 @@ export default function BoardPage() {
       <ConfirmDialog
         open={!!deleteTaskId}
         onOpenChange={(open) => { if (!open) setDeleteTaskId(null); }}
-        title="Delete Task"
-        description="This task will be permanently deleted. This action cannot be undone."
-        confirmLabel="Delete"
+        title={t("board.delete_task")}
+        description={t("board.delete_task_desc")}
+        confirmLabel={t("common.delete")}
         variant="destructive"
         loading={deleteTask.isPending}
         onConfirm={() => {
@@ -213,30 +213,30 @@ export default function BoardPage() {
 
       <Dialog open={colDialogOpen} onOpenChange={setColDialogOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Add Column</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t("board.add_column")}</DialogTitle></DialogHeader>
           <form onSubmit={handleCol((d) => addCol.mutate(d, { onSuccess: () => { resetCol(); setColDialogOpen(false); } }))} className="space-y-4">
-            <Input placeholder="Column title" {...regCol("title")} />
-            <Button type="submit" className="w-full" disabled={addCol.isPending}>{addCol.isPending ? "Adding..." : "Add Column"}</Button>
+            <Input placeholder={t("task.column_title_placeholder")} {...regCol("title")} />
+            <Button type="submit" className="w-full" disabled={addCol.isPending}>{addCol.isPending ? t("board.creating") : t("board.add_column")}</Button>
           </form>
         </DialogContent>
       </Dialog>
 
       <Dialog open={taskDialogOpen} onOpenChange={setTaskDialogOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Create Task</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t("task.create_task")}</DialogTitle></DialogHeader>
           <form onSubmit={handleSubmit((d) => createTask.mutate({ ...d, columnId: selectedColumn, priority: d.priority || "MEDIUM" }, { onSuccess: () => { reset(); setTaskDialogOpen(false); } }))} className="space-y-4">
-            <Input placeholder="Task title" {...register("title")} />
+            <Input placeholder={t("task.title")} {...register("title")} />
             <textarea placeholder="Description" rows={2} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm" {...register("description")} />
             <Controller name="priority" control={control} render={({ field }) => (
-              <div className="flex gap-2">{PRIORITIES.map((p) => (
-                <button key={p.value} type="button" onClick={() => field.onChange(p.value)}
-                  className={`flex-1 rounded-md border px-3 py-1.5 text-xs font-medium ${field.value === p.value ? "border-primary bg-primary/10 text-primary" : "border-border"}`}>
-                  {p.label}
+              <div className="flex gap-2">{PRIORITY_KEYS.map((value) => (
+                <button key={value} type="button" onClick={() => field.onChange(value)}
+                  className={`flex-1 rounded-md border px-3 py-1.5 text-xs font-medium ${field.value === value ? "border-primary bg-primary/10 text-primary" : "border-border"}`}>
+                  {t(`priority.${value}`)}
                 </button>
               ))}</div>
             )} />
             <Input type="date" {...register("dueDate")} />
-            <Button type="submit" className="w-full" disabled={createTask.isPending}>{createTask.isPending ? "Creating..." : "Create Task"}</Button>
+            <Button type="submit" className="w-full" disabled={createTask.isPending}>{createTask.isPending ? t("task.creating") : t("task.create_task")}</Button>
           </form>
         </DialogContent>
       </Dialog>

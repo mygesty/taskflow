@@ -2,6 +2,7 @@
 
 import { memo } from "react";
 import { useDraggable } from "@dnd-kit/core";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -24,6 +25,7 @@ interface DraggableCardProps {
 }
 
 export const DraggableCard = memo(function DraggableCard({ task, workspaceId, onClick, onDelete }: DraggableCardProps) {
+  const t = useTranslations();
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: task.id,
     data: { task, sourceColumnId: task.columnId },
@@ -57,7 +59,7 @@ export const DraggableCard = memo(function DraggableCard({ task, workspaceId, on
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDelete?.(task.id); }}>
-              <Trash2 className="mr-2 size-3.5" />Delete Task
+              <Trash2 className="mr-2 size-3.5" />{t("task.delete_task")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -70,7 +72,7 @@ export const DraggableCard = memo(function DraggableCard({ task, workspaceId, on
           <div
             key={a.user.id}
             className="flex size-5 cursor-pointer items-center justify-center rounded-full bg-primary/10 text-[9px] font-medium text-primary hover:ring-2 hover:ring-destructive/50"
-            title={`${a.user.name} — unassign`}
+            title={`${a.user.name}`}
             onClick={(e) => { e.stopPropagation(); removeAssignee.mutate(a.user.id); }}
           >
             {a.user.name.charAt(0)}
@@ -87,7 +89,7 @@ export const DraggableCard = memo(function DraggableCard({ task, workspaceId, on
                 {m.user.name}
               </DropdownMenuItem>
             ))}
-            {unassigned.length === 0 && <div className="px-2 py-2 text-xs text-muted-foreground">No members</div>}
+            {unassigned.length === 0 && <div className="px-2 py-2 text-xs text-muted-foreground">{t("task.no_members")}</div>}
           </DropdownMenuContent>
         </DropdownMenu>
         {(task.labels || []).map((l: any) => (

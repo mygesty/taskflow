@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Bell, LogOut, ChevronRight, CheckCheck, Sun, Moon } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
+import { useTranslations, useFormatter } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
@@ -11,14 +12,11 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useLogout } from "@/hooks/useAuth";
 import { useUnreadCount, useNotifications, useMarkRead, useMarkAllRead } from "@/hooks/useNotifications";
 import { useTheme } from "@/components/providers/ThemeProvider";
-
-const breadcrumbs: Record<string, string> = {
-  "/dashboard": "Dashboard",
-  "/register": "Register",
-  "/login": "Login",
-};
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 
 export function Header() {
+  const t = useTranslations();
+  const format = useFormatter();
   const router = useRouter();
   const pathname = usePathname();
   const { user, isAuthenticated } = useAuthStore();
@@ -30,7 +28,12 @@ export function Header() {
   const markAllRead = useMarkAllRead();
   const [notifOpen, setNotifOpen] = useState(false);
 
-  const pageTitle = breadcrumbs[pathname] || "TaskFlow";
+  const breadcrumbs: Record<string, string> = {
+    "/dashboard": t("nav.dashboard"),
+    "/register": t("auth.create_account"),
+    "/login": t("auth.sign_in"),
+  };
+  const pageTitle = breadcrumbs[pathname] || t("common.app_name");
 
   const handleLogout = () => {
     logout.mutate(undefined, { onSuccess: () => router.push("/login") });
@@ -41,7 +44,7 @@ export function Header() {
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-card px-6">
       <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-        <span>TaskFlow</span>
+        <span>{t("common.app_name")}</span>
         <ChevronRight className="size-3.5" />
         <span className="font-medium text-foreground">{pageTitle}</span>
       </div>
@@ -64,16 +67,16 @@ export function Header() {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-80">
             <div className="flex items-center justify-between px-2 py-1.5">
-              <span className="text-sm font-semibold">Notifications</span>
+              <span className="text-sm font-semibold">{t("notification.title")}</span>
               {unreadCount ? (
                 <button onClick={() => markAllRead.mutate()} className="text-xs text-primary hover:underline">
-                  <CheckCheck className="mr-1 inline size-3" />Mark all read
+                  <CheckCheck className="mr-1 inline size-3" />{t("notification.mark_all_read")}
                 </button>
               ) : null}
             </div>
             <div className="-mx-1 my-1 h-px bg-border" />
             {notifications.length === 0 ? (
-              <div className="px-2 py-4 text-center text-xs text-muted-foreground">No notifications</div>
+              <div className="px-2 py-4 text-center text-xs text-muted-foreground">{t("notification.no_notifications")}</div>
             ) : (
               notifications.map((n: any) => (
                 <DropdownMenuItem
@@ -88,7 +91,7 @@ export function Header() {
                     {!n.read && <div className="size-1.5 rounded-full bg-primary shrink-0" />}
                     <span className="text-sm font-medium">{n.title}</span>
                     <span className="ml-auto text-[10px] text-muted-foreground shrink-0">
-                      {new Date(n.createdAt).toLocaleDateString()}
+                      {format.dateTime(new Date(n.createdAt), { dateStyle: "short" })}
                     </span>
                   </div>
                   {n.task?.title && (
@@ -99,7 +102,7 @@ export function Header() {
             )}
             <div className="-mx-1 my-1 h-px bg-border" />
             <DropdownMenuItem onClick={() => { router.push("/notifications"); setNotifOpen(false); }}>
-              <span className="text-xs text-primary">View all notifications</span>
+              <span className="text-xs text-primary">{t("notification.view_all")}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -114,14 +117,15 @@ export function Header() {
             <div className="px-2 pb-1.5 text-xs text-muted-foreground">{user?.email}</div>
             <div className="-mx-1 my-1 h-px bg-border" />
             <DropdownMenuItem onClick={() => router.push("/notifications")}>
-              <Bell className="mr-2 size-4" />Notifications
+              <Bell className="mr-2 size-4" />{t("nav.notifications")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={toggleTheme}>
               {theme === "dark" ? <Sun className="mr-2 size-4" /> : <Moon className="mr-2 size-4" />}
-              {theme === "dark" ? "Light Mode" : "Dark Mode"}
+              {theme === "dark" ? t("nav.light_mode") : t("nav.dark_mode")}
             </DropdownMenuItem>
+            <LanguageSwitcher />
             <DropdownMenuItem onClick={handleLogout}>
-              <LogOut className="mr-2 size-4" />Logout
+              <LogOut className="mr-2 size-4" />{t("nav.logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

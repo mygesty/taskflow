@@ -5,10 +5,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRegister } from "@/hooks/useAuth";
+import { translateFieldError } from "@/lib/i18n-zod";
 
 const schema = z
   .object({
@@ -30,6 +32,7 @@ const schema = z
 type FormData = z.infer<typeof schema>;
 
 export function RegisterForm() {
+  const t = useTranslations();
   const router = useRouter();
   const registerMutation = useRegister();
 
@@ -53,43 +56,43 @@ export function RegisterForm() {
   return (
     <Card className="w-full max-w-md border-0 shadow-none sm:border sm:shadow-sm">
       <CardHeader className="space-y-1 text-center sm:text-left">
-        <CardTitle className="text-xl">Create an account</CardTitle>
-        <CardDescription>Enter your details to get started</CardDescription>
+        <CardTitle className="text-xl">{t("auth.create_account")}</CardTitle>
+        <CardDescription>{t("auth.register_prompt")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-1.5">
-            <label htmlFor="email" className="text-sm font-medium">Email</label>
-            <Input id="email" placeholder="you@example.com" type="email" {...register("email")} />
-            {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+            <label htmlFor="email" className="text-sm font-medium">{t("auth.email")}</label>
+            <Input id="email" placeholder={t("auth.email_placeholder")} type="email" {...register("email")} />
+            {errors.email && <p className="text-xs text-destructive">{translateFieldError(errors.email.message, t)}</p>}
           </div>
           <div className="space-y-1.5">
-            <label htmlFor="name" className="text-sm font-medium">Name</label>
-            <Input id="name" placeholder="Your name" {...register("name")} />
-            {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+            <label htmlFor="name" className="text-sm font-medium">{t("auth.name")}</label>
+            <Input id="name" placeholder={t("auth.name_placeholder")} {...register("name")} />
+            {errors.name && <p className="text-xs text-destructive">{translateFieldError(errors.name.message, t)}</p>}
           </div>
           <div className="space-y-1.5">
-            <label htmlFor="password" className="text-sm font-medium">Password</label>
-            <Input id="password" type="password" placeholder="Min. 8 characters" {...register("password")} />
-            {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
+            <label htmlFor="password" className="text-sm font-medium">{t("auth.password")}</label>
+            <Input id="password" type="password" placeholder={t("auth.password_placeholder_short")} {...register("password")} />
+            {errors.password && <p className="text-xs text-destructive">{translateFieldError(errors.password.message, t)}</p>}
           </div>
           <div className="space-y-1.5">
-            <label htmlFor="confirmPassword" className="text-sm font-medium">Confirm password</label>
-            <Input id="confirmPassword" type="password" placeholder="Repeat your password" {...register("confirmPassword")} />
-            {errors.confirmPassword && <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>}
+            <label htmlFor="confirmPassword" className="text-sm font-medium">{t("auth.confirm_password")}</label>
+            <Input id="confirmPassword" type="password" placeholder={t("auth.confirm_password_placeholder")} {...register("confirmPassword")} />
+            {errors.confirmPassword && <p className="text-xs text-destructive">{translateFieldError(errors.confirmPassword.message, t)}</p>}
           </div>
           {registerMutation.isError && (
             <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-              {(registerMutation.error as Error)?.message || "Registration failed"}
+              {(registerMutation.error as Error)?.message || t("auth.registration_failed")}
             </p>
           )}
           <Button type="submit" className="w-full" size="lg" disabled={registerMutation.isPending}>
-            {registerMutation.isPending ? "Creating account..." : "Create account"}
+            {registerMutation.isPending ? t("auth.creating_account") : t("auth.create_account")}
           </Button>
         </form>
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
-          <Link href="/login" className="font-medium text-primary hover:underline">Sign in</Link>
+          {t("auth.already_have_account")}{" "}
+          <Link href="/login" className="font-medium text-primary hover:underline">{t("auth.sign_in_link")}</Link>
         </p>
       </CardContent>
     </Card>

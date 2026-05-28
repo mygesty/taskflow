@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Check, X } from "lucide-react";
@@ -16,6 +17,7 @@ interface SubTaskListProps {
 }
 
 export function SubTaskList({ taskId, subTasks }: SubTaskListProps) {
+  const t = useTranslations();
   const [title, setTitle] = useState("");
   const addSubTask = useAddSubTask(taskId);
   const updateSubTask = useUpdateSubTask(taskId);
@@ -34,7 +36,7 @@ export function SubTaskList({ taskId, subTasks }: SubTaskListProps) {
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <label className="text-xs font-medium text-muted-foreground">
-          Sub-Tasks ({completed}/{total})
+          {t("task.sub_tasks")} ({completed}/{total})
         </label>
       </div>
 
@@ -82,13 +84,13 @@ export function SubTaskList({ taskId, subTasks }: SubTaskListProps) {
       {/* Add sub-task form */}
       <form onSubmit={handleSubmit} className="flex gap-2">
         <Input
-          placeholder="Add sub-task..."
+          placeholder={t("task.add_sub_task")}
           className="h-7 text-xs"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
         <Button type="submit" size="xs" disabled={!title.trim() || addSubTask.isPending}>
-          {addSubTask.isPending ? "..." : "Add"}
+          {addSubTask.isPending ? "..." : t("common.add")}
         </Button>
       </form>
     </div>

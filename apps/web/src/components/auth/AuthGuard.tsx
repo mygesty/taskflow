@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/stores/auth-store";
 
 const BFF_URL = process.env.NEXT_PUBLIC_BFF_URL || "http://localhost:3002/api/bff";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
+  const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated, setUser } = useAuthStore();
@@ -47,7 +49,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   if (checking) {
     return (
       <div className="flex h-full items-center justify-center bg-muted/30">
-        <div className="text-sm text-muted-foreground">Loading...</div>
+        <div className="text-sm text-muted-foreground">{t("common.loading")}</div>
       </div>
     );
   }

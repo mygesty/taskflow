@@ -57,7 +57,13 @@
       "Bash(curl -s -X POST http://localhost:3001/api/v1/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"e2e-verify@test.com\",\"password\":\"Abcdef1g\"}')",
       "Bash(curl *)",
       "Bash(python -c ' *)",
-      "Bash(python -c \"import sys,json; t=json.load\\(sys.stdin\\)['data']; print\\('assignees:', len\\(t.get\\('assignees',[]\\)\\)\\)\")"
+      "Bash(python -c \"import sys,json; t=json.load\\(sys.stdin\\)['data']; print\\('assignees:', len\\(t.get\\('assignees',[]\\)\\)\\)\")",
+      "Bash(npx next *)",
+      "Bash(docker compose *)",
+      "Bash(pnpm dev *)",
+      "Read(//tmp/**)",
+      "Bash(curl -s -c /tmp/cookies_final.txt -X POST http://localhost:3002/api/bff/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"test@test.com\",\"password\":\"Test1234\"}')",
+      "Bash(curl -s -c /tmp/cookies_final2.txt -X POST http://localhost:3002/api/bff/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"test@test.com\",\"password\":\"Test1234\"}')"
     ]
   },
   "enabledMcpjsonServers": [

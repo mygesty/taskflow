@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLabels, useAddLabel, useRemoveLabel } from "@/hooks/useTasks";
@@ -15,6 +16,7 @@ interface LabelSelectProps {
 const PRESET_COLORS = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6", "#6366f1", "#a855f7", "#ec4899"];
 
 export function LabelSelect({ taskId, workspaceId, currentLabels }: LabelSelectProps) {
+  const t = useTranslations();
   const [open, setOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const { data: labels } = useLabels(workspaceId);
@@ -44,7 +46,7 @@ export function LabelSelect({ taskId, workspaceId, currentLabels }: LabelSelectP
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <label className="text-xs font-medium text-muted-foreground">Labels</label>
+        <label className="text-xs font-medium text-muted-foreground">{t("task.labels")}</label>
         <div className="relative">
           <button
             type="button"
@@ -61,7 +63,7 @@ export function LabelSelect({ taskId, workspaceId, currentLabels }: LabelSelectP
                 <form onSubmit={handleCreateNew} className="flex gap-1 px-1 py-1.5">
                   <Input
                     className="h-6 text-xs"
-                    placeholder="New label..."
+                    placeholder={t("task.new_label")}
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
                     autoFocus
@@ -82,7 +84,7 @@ export function LabelSelect({ taskId, workspaceId, currentLabels }: LabelSelectP
                   </button>
                 ))}
                 {availableLabels.length === 0 && !newName.trim() && (
-                  <div className="px-2 py-2 text-xs text-muted-foreground">No labels available</div>
+                  <div className="px-2 py-2 text-xs text-muted-foreground">{t("task.no_labels_available")}</div>
                 )}
               </div>
             </>
@@ -93,7 +95,7 @@ export function LabelSelect({ taskId, workspaceId, currentLabels }: LabelSelectP
       {/* Current labels */}
       <div className="flex flex-wrap gap-1.5">
         {currentLabels.length === 0 && (
-          <span className="text-xs text-muted-foreground">No labels</span>
+          <span className="text-xs text-muted-foreground">{t("task.no_labels")}</span>
         )}
         {currentLabels.map(({ label }) => (
           <button

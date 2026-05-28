@@ -10,6 +10,7 @@ authRoutes.post("/register", zValidator("json", registerDTO), async (c) => {
 
   const response = await apiClient.post("auth/register", {
     json: body,
+    throwHttpErrors: false,
   });
 
   const data = await response.json<{
@@ -23,9 +24,9 @@ authRoutes.post("/register", zValidator("json", registerDTO), async (c) => {
     return c.json(data);
   }
 
-  const setCookie = response.headers.get("set-cookie");
-  if (setCookie) {
-    c.header("set-cookie", setCookie);
+  const setCookies = response.headers.getSetCookie ? response.headers.getSetCookie() : [];
+  for (const cookie of setCookies) {
+    c.header("set-cookie", cookie, { append: true });
   }
 
   return c.json(data, 201);
@@ -36,6 +37,7 @@ authRoutes.post("/login", zValidator("json", loginDTO), async (c) => {
 
   const response = await apiClient.post("auth/login", {
     json: body,
+    throwHttpErrors: false,
   });
 
   const data = await response.json<{
@@ -49,9 +51,9 @@ authRoutes.post("/login", zValidator("json", loginDTO), async (c) => {
     return c.json(data);
   }
 
-  const setCookie = response.headers.get("set-cookie");
-  if (setCookie) {
-    c.header("set-cookie", setCookie);
+  const setCookies = response.headers.getSetCookie ? response.headers.getSetCookie() : [];
+  for (const cookie of setCookies) {
+    c.header("set-cookie", cookie, { append: true });
   }
 
   return c.json(data);
@@ -61,6 +63,7 @@ authRoutes.post("/refresh", async (c) => {
   const cookieHeader = c.req.header("cookie");
   const response = await apiClient.post("auth/refresh", {
     headers: cookieHeader ? { cookie: cookieHeader } : {},
+    throwHttpErrors: false,
   });
 
   const data = await response.json<{
@@ -74,9 +77,9 @@ authRoutes.post("/refresh", async (c) => {
     return c.json(data);
   }
 
-  const setCookie = response.headers.get("set-cookie");
-  if (setCookie) {
-    c.header("set-cookie", setCookie);
+  const setCookies = response.headers.getSetCookie ? response.headers.getSetCookie() : [];
+  for (const cookie of setCookies) {
+    c.header("set-cookie", cookie, { append: true });
   }
 
   return c.json(data);
@@ -107,7 +110,7 @@ authRoutes.get("/me", async (c) => {
 });
 
 authRoutes.post("/logout", async (c) => {
-  const response = await apiClient.post("auth/logout");
+  const response = await apiClient.post("auth/logout", { throwHttpErrors: false });
 
   const data = await response.json<{
     success: boolean;

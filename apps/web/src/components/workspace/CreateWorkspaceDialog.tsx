@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,6 +15,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useCreateWorkspace } from "@/hooks/useWorkspaces";
+import { translateFieldError } from "@/lib/i18n-zod";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
@@ -29,6 +31,7 @@ export function CreateWorkspaceDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations();
   const router = useRouter();
   const createMutation = useCreateWorkspace();
 
@@ -55,25 +58,25 @@ export function CreateWorkspaceDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Workspace</DialogTitle>
-          <DialogDescription>Create a new workspace for your team.</DialogDescription>
+          <DialogTitle>{t("workspace.create_workspace")}</DialogTitle>
+          <DialogDescription>{t("home.description")}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Name</label>
-            <Input placeholder="Workspace name" {...register("name")} />
-            {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+            <label className="text-sm font-medium">{t("auth.name")}</label>
+            <Input placeholder={t("workspace.workspace_name_placeholder")} {...register("name")} />
+            {errors.name && <p className="text-xs text-destructive">{translateFieldError(errors.name.message, t)}</p>}
           </div>
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Description (optional)</label>
-            <Input placeholder="Brief description" {...register("description")} />
-            {errors.description && <p className="text-xs text-destructive">{errors.description.message}</p>}
+            <label className="text-sm font-medium">{t("workspace.description_optional")}</label>
+            <Input placeholder={t("workspace.description_placeholder")} {...register("description")} />
+            {errors.description && <p className="text-xs text-destructive">{translateFieldError(errors.description.message, t)}</p>}
           </div>
           {createMutation.isError && (
-            <p className="text-sm text-destructive">{(createMutation.error as Error)?.message || "Failed to create workspace"}</p>
+            <p className="text-sm text-destructive">{(createMutation.error as Error)?.message || t("validation.failed")}</p>
           )}
           <Button type="submit" className="w-full" disabled={createMutation.isPending}>
-            {createMutation.isPending ? "Creating..." : "Create Workspace"}
+            {createMutation.isPending ? t("workspace.creating") : t("workspace.create_workspace")}
           </Button>
         </form>
       </DialogContent>

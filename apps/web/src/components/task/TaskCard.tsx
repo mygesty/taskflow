@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations, useFormatter } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useDeleteTask, useAssignMember, useRemoveAssignee } from "@/hooks/useTasks";
 import { useWorkspaceOverview } from "@/hooks/useWorkspaces";
 import { MoreHorizontal, Trash2, UserPlus, Check } from "lucide-react";
@@ -30,17 +32,21 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ task, workspaceId, onClick }: TaskCardProps) {
+  const t = useTranslations();
+  const format = useFormatter();
   const deleteTask = useDeleteTask();
   const assignMember = useAssignMember(task.id);
   const removeAssignee = useRemoveAssignee(task.id);
   const { data: overview } = useWorkspaceOverview(workspaceId);
   const [assignOpen, setAssignOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const members = overview?.members || [];
   const assignedIds = new Set((task.assignees || []).map((a) => a.user.id));
   const unassignedMembers = members.filter((m) => !assignedIds.has(m.userId));
 
   return (
+    <>
     <div
       onClick={onClick}
       className={`rounded-md border border-border bg-card p-2.5 shadow-sm border-l-2 cursor-pointer hover:shadow-md transition-shadow ${priorityColors[task.priority] || ""}`}
@@ -52,8 +58,8 @@ export function TaskCard({ task, workspaceId, onClick }: TaskCardProps) {
             <MoreHorizontal className="size-3.5" />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => { if (confirm("Delete this task?")) deleteTask.mutate(task.id); }}>
-              <Trash2 className="mr-2 size-3.5" />Delete Task
+            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setDeleteDialogOpen(true); }}>
+              <Trash2 className="mr-2 size-3.5" />{t("task.delete_task")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -61,7 +67,7 @@ export function TaskCard({ task, workspaceId, onClick }: TaskCardProps) {
 
       <div className="mt-2 flex flex-wrap items-center gap-1.5">
         {task.priority && task.priority !== "MEDIUM" && (
-          <Badge variant={priorityBadgeVariant[task.priority]} className="text-[10px]">{task.priority}</Badge>
+          <Badge variant={priorityBadgeVariant[task.priority]} className="text-[10px]">{t(`priority.${task.priority}`)}</Badge>
         )}
 
         {/* Assignee avatars + assign button */}
@@ -80,7 +86,7 @@ export function TaskCard({ task, workspaceId, onClick }: TaskCardProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="max-h-48 overflow-y-auto">
             {unassignedMembers.length === 0 ? (
-              <div className="px-2 py-2 text-xs text-muted-foreground">No members to assign</div>
+              <div className="px-2 py-2 text-xs text-muted-foreground">{t("task.no_members_to_assign")}</div>
             ) : (
               unassignedMembers.map((m) => (
                 <DropdownMenuItem key={m.userId} onClick={() => assignMember.mutate(m.userId)}>
@@ -102,7 +108,7 @@ export function TaskCard({ task, workspaceId, onClick }: TaskCardProps) {
 
         {task.dueDate && (
           <span className="ml-auto text-[10px] text-muted-foreground">
-            {new Date(task.dueDate).toLocaleDateString()}
+            {format.dateTime(new Date(task.dueDate), { dateStyle: "short" })}
           </span>
         )}
 
@@ -113,5 +119,19 @@ export function TaskCard({ task, workspaceId, onClick }: TaskCardProps) {
         )}
       </div>
     </div>
+
+    <ConfirmDialog
+      open={deleteDialogOpen}
+      onOpenChange={setDeleteDialogOpen}
+      title={t("task.delete_task")}
+      description={t("board.delete_task_desc")}
+      confirmLabel={t("common.delete")}
+      variant="destructive"
+      loading={deleteTask.isPending}
+      onConfirm={() => {
+        deleteTask.mutate(task.id, { onSuccess: () => setDeleteDialogOpen(false) });
+      }}
+    />
+  </>
   );
 }

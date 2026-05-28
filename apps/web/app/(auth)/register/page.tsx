@@ -1,7 +1,11 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 import { LayoutGrid } from "lucide-react";
 
 export default function RegisterPage() {
+  const t = useTranslations();
   return (
     <div className="flex min-h-full">
       <div className="hidden w-1/2 bg-primary/5 lg:flex lg:flex-col lg:items-center lg:justify-center lg:px-12">
@@ -9,9 +13,9 @@ export default function RegisterPage() {
           <div className="mb-6 inline-flex size-14 items-center justify-center rounded-2xl bg-primary/10">
             <LayoutGrid className="size-7 text-primary" />
           </div>
-          <h2 className="text-2xl font-bold tracking-tight">Join TaskFlow</h2>
+          <h2 className="text-2xl font-bold tracking-tight">{t("auth.create_account")}</h2>
           <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-            Create your account and start collaborating with your team in minutes.
+            {t("home.description")}
           </p>
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -12,13 +13,6 @@ import { useUpdateTask, useDeleteTask, useAssignMember, useRemoveAssignee } from
 import { useWorkspaceOverview } from "@/hooks/useWorkspaces";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { X, Trash2, Plus } from "lucide-react";
-
-const PRIORITIES = [
-  { value: "LOW", label: "Low" },
-  { value: "MEDIUM", label: "Medium" },
-  { value: "HIGH", label: "High" },
-  { value: "URGENT", label: "Urgent" },
-];
 
 interface TaskDetailPanelProps {
   task: {
@@ -33,6 +27,7 @@ interface TaskDetailPanelProps {
 }
 
 export function TaskDetailPanel({ task, workspaceId, onClose }: TaskDetailPanelProps) {
+  const t = useTranslations();
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description || "");
   const [priority, setPriority] = useState(task.priority);
@@ -42,6 +37,13 @@ export function TaskDetailPanel({ task, workspaceId, onClose }: TaskDetailPanelP
   const assignMember = useAssignMember(task.id);
   const removeAssignee = useRemoveAssignee(task.id);
   const { data: overview } = useWorkspaceOverview(workspaceId);
+
+  const PRIORITIES = [
+    { value: "LOW", label: t("priority.LOW") },
+    { value: "MEDIUM", label: t("priority.MEDIUM") },
+    { value: "HIGH", label: t("priority.HIGH") },
+    { value: "URGENT", label: t("priority.URGENT") },
+  ];
 
   useEffect(() => {
     setTitle(task.title);
@@ -72,7 +74,7 @@ export function TaskDetailPanel({ task, workspaceId, onClose }: TaskDetailPanelP
     <div className="fixed inset-y-0 right-0 z-40 flex w-96 flex-col border-l border-border bg-card shadow-xl">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <h3 className="text-sm font-semibold">Task Details</h3>
+        <h3 className="text-sm font-semibold">{t("task.details")}</h3>
         <Button variant="ghost" size="icon-xs" onClick={onClose}>
           <X className="size-4" />
         </Button>
@@ -81,7 +83,7 @@ export function TaskDetailPanel({ task, workspaceId, onClose }: TaskDetailPanelP
       <div className="flex-1 overflow-y-auto p-4 space-y-5">
         {/* Title */}
         <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground">Title</label>
+          <label className="text-xs font-medium text-muted-foreground">{t("task.title")}</label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -91,20 +93,20 @@ export function TaskDetailPanel({ task, workspaceId, onClose }: TaskDetailPanelP
 
         {/* Description */}
         <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground">Description</label>
+          <label className="text-xs font-medium text-muted-foreground">{t("task.description")}</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             onBlur={() => { if (description !== (task.description || "")) save("description", description); }}
             rows={4}
             className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-            placeholder="Add a description..."
+            placeholder={t("task.description_placeholder")}
           />
         </div>
 
         {/* Priority */}
         <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground">Priority</label>
+          <label className="text-xs font-medium text-muted-foreground">{t("task.priority")}</label>
           <div className="flex gap-1.5">
             {PRIORITIES.map((p) => (
               <button
@@ -125,7 +127,7 @@ export function TaskDetailPanel({ task, workspaceId, onClose }: TaskDetailPanelP
 
         {/* Due Date */}
         <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground">Due Date</label>
+          <label className="text-xs font-medium text-muted-foreground">{t("task.due_date")}</label>
           <Input
             type="date"
             value={dueDate}
@@ -136,7 +138,7 @@ export function TaskDetailPanel({ task, workspaceId, onClose }: TaskDetailPanelP
         {/* Assignees */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-medium text-muted-foreground">Assignees</label>
+            <label className="text-xs font-medium text-muted-foreground">{t("task.assignees")}</label>
             <div className="relative">
               <button
                 type="button"
@@ -150,7 +152,7 @@ export function TaskDetailPanel({ task, workspaceId, onClose }: TaskDetailPanelP
                   <div className="fixed inset-0 z-40" onClick={() => setAssignPopoverOpen(false)} />
                   <div className="absolute right-0 top-7 z-50 w-44 rounded-md border border-border bg-popover p-1 shadow-md">
                     {unassignedMembers.length === 0 ? (
-                      <div className="px-2 py-2 text-xs text-muted-foreground">No members to assign</div>
+                      <div className="px-2 py-2 text-xs text-muted-foreground">{t("task.no_members_to_assign")}</div>
                     ) : (
                       unassignedMembers.map((m) => (
                         <button
@@ -172,7 +174,7 @@ export function TaskDetailPanel({ task, workspaceId, onClose }: TaskDetailPanelP
             </div>
           </div>
           {(!task.assignees || task.assignees.length === 0) && (
-            <p className="text-xs text-muted-foreground">No assignees</p>
+            <p className="text-xs text-muted-foreground">{t("task.no_assignees")}</p>
           )}
           {(task.assignees || []).map((a: any) => (
             <div key={a.user.id} className="flex items-center justify-between rounded-md bg-muted/50 px-3 py-1.5">
@@ -201,7 +203,7 @@ export function TaskDetailPanel({ task, workspaceId, onClose }: TaskDetailPanelP
 
         {/* Comments */}
         <div className="space-y-3">
-          <label className="text-xs font-medium text-muted-foreground">Comments</label>
+          <label className="text-xs font-medium text-muted-foreground">{t("task.comments")}</label>
           <CommentList taskId={task.id} />
           <CommentInput taskId={task.id} workspaceId={workspaceId} />
         </div>
@@ -210,16 +212,16 @@ export function TaskDetailPanel({ task, workspaceId, onClose }: TaskDetailPanelP
       {/* Footer */}
       <div className="border-t border-border p-3">
         <Button variant="destructive" size="sm" className="w-full" onClick={handleDelete}>
-          <Trash2 className="mr-1.5 size-4" />Delete Task
+          <Trash2 className="mr-1.5 size-4" />{t("task.delete_task")}
         </Button>
       </div>
 
       <ConfirmDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        title="Delete Task"
-        description="This task and all its comments, subtasks, and assignees will be permanently deleted."
-        confirmLabel="Delete"
+        title={t("task.delete_task")}
+        description={t("confirm.delete_task_desc")}
+        confirmLabel={t("common.delete")}
         variant="destructive"
         loading={deleteTask.isPending}
         onConfirm={() => {

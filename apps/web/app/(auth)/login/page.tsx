@@ -1,8 +1,12 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { Suspense } from "react";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { LayoutGrid } from "lucide-react";
 
 export default function LoginPage() {
+  const t = useTranslations();
   return (
     <div className="flex min-h-full">
       <div className="hidden w-1/2 bg-primary/5 lg:flex lg:flex-col lg:items-center lg:justify-center lg:px-12">
@@ -10,9 +14,9 @@ export default function LoginPage() {
           <div className="mb-6 inline-flex size-14 items-center justify-center rounded-2xl bg-primary/10">
             <LayoutGrid className="size-7 text-primary" />
           </div>
-          <h2 className="text-2xl font-bold tracking-tight">TaskFlow</h2>
+          <h2 className="text-2xl font-bold tracking-tight">{t("common.app_name")}</h2>
           <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-            Lightweight task collaboration for teams. Organize, track, and deliver work together.
+            {t("home.description")}
           </p>
         </div>
       </div>

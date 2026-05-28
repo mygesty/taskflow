@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations, useFormatter } from "next-intl";
 import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +10,8 @@ import { useNotifications, useMarkRead, useMarkAllRead } from "@/hooks/useNotifi
 import { Bell, CheckCheck } from "lucide-react";
 
 export default function NotificationsPage() {
+  const t = useTranslations();
+  const format = useFormatter();
   const router = useRouter();
   const [page, setPage] = useState(1);
   const { data, isLoading } = useNotifications(page);
@@ -24,23 +27,23 @@ export default function NotificationsPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Notifications</h1>
+            <h1 className="text-2xl font-bold tracking-tight">{t("notification.title")}</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {total} notification{total !== 1 ? "s" : ""}
+              {total} {t("notification.title")}
             </p>
           </div>
           <Button variant="outline" size="sm" onClick={() => markAllRead.mutate()}>
-            <CheckCheck className="mr-1.5 size-4" />Mark All Read
+            <CheckCheck className="mr-1.5 size-4" />{t("notification.mark_all_read")}
           </Button>
         </div>
 
         {isLoading ? (
-          <p className="text-sm text-muted-foreground">Loading...</p>
+          <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
         ) : notifications.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-16 text-center">
               <Bell className="mb-3 size-10 text-muted-foreground/30" />
-              <p className="text-sm text-muted-foreground">No notifications yet.</p>
+              <p className="text-sm text-muted-foreground">{t("notification.no_notifications")}</p>
             </CardContent>
           </Card>
         ) : (
@@ -53,7 +56,6 @@ export default function NotificationsPage() {
                   onClick={() => {
                     markRead.mutate(n.id);
                     if (n.taskId) {
-                      // Navigate to the board — simplified
                       router.push("/dashboard");
                     }
                   }}
@@ -65,7 +67,7 @@ export default function NotificationsPage() {
                     {n.task?.title && <p className="text-xs text-primary mt-0.5">Task: {n.task.title}</p>}
                   </div>
                   <span className="text-xs text-muted-foreground shrink-0">
-                    {new Date(n.createdAt).toLocaleString()}
+                    {format.dateTime(new Date(n.createdAt), { dateStyle: "short", timeStyle: "short" })}
                   </span>
                 </div>
               ))}
@@ -76,13 +78,13 @@ export default function NotificationsPage() {
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-2">
             <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-              Previous
+              {t("pagination.previous")}
             </Button>
             <span className="text-sm text-muted-foreground">
               {page} / {totalPages}
             </span>
             <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
-              Next
+              {t("pagination.next")}
             </Button>
           </div>
         )}
