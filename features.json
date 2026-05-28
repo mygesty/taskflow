@@ -5,7 +5,7 @@
       "title": "User registration and login",
       "category": "auth",
       "priority": 1,
-      "status": "failing",
+      "status": "passing",
       "dependsOn": [],
       "spec": "docs/features/feat-001/requirements.md",
       "steps": [
@@ -64,7 +64,7 @@
       "title": "Create and manage tasks",
       "category": "task",
       "priority": 4,
-      "status": "failing",
+      "status": "passing",
       "dependsOn": ["feat-001", "feat-002", "feat-003"],
       "spec": "docs/features/feat-004/requirements.md",
       "steps": [

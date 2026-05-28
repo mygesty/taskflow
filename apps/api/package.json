@@ -8,12 +8,13 @@
     "start": "next start --port 3001",
     "lint": "eslint src/ app/",
     "typecheck": "tsc --noEmit",
-    "test:unit": "vitest run --project unit",
-    "test:unit:watch": "vitest --project unit",
-    "test:integration": "vitest run --project integration",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
     "clean": "rm -rf .next .turbo node_modules"
   },
   "dependencies": {
+    "@prisma/client": "^6.2.0",
     "@taskflow/db": "workspace:*",
     "@taskflow/shared": "workspace:*",
     "bcryptjs": "^2.4.3",

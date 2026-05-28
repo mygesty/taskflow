@@ -30,16 +30,18 @@ function DropdownMenuContent({
 }: React.ComponentProps<typeof Menu.Popup>) {
   return (
     <Menu.Portal>
-      <Menu.Popup
-        className={cn(
-          "z-50 min-w-[8rem] overflow-hidden rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md",
-          "data-[ending-style]:scale-95 data-[starting-style]:scale-95 transition-all duration-150",
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </Menu.Popup>
+      <Menu.Positioner>
+        <Menu.Popup
+          className={cn(
+            "z-50 min-w-[8rem] overflow-hidden rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md",
+            "data-[ending-style]:scale-95 data-[starting-style]:scale-95 transition-all duration-150",
+            className,
+          )}
+          {...props}
+        >
+          {children}
+        </Menu.Popup>
+      </Menu.Positioner>
     </Menu.Portal>
   );
 }

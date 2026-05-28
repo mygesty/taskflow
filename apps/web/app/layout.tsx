@@ -17,8 +17,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
-      <body>
+    <html lang="en" className={cn("font-sans h-full", geist.variable)} suppressHydrationWarning>
+      <body className="h-full" suppressHydrationWarning>
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
