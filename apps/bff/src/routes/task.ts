@@ -80,4 +80,21 @@ taskRoutes.delete("/:id/labels/:labelId", async (c) => {
   const data: any = await res.json(); c.status(res.status as any); return c.json(data);
 });
 
+
+// Comments
+taskRoutes.get("/:id/comments", async (c) => {
+  const res = await apiClient.get(`tasks/${c.req.param("id")}/comments`, { headers: { cookie: hdr(c) }, throwHttpErrors: false });
+  const data: any = await res.json(); c.status(res.status as any); return c.json(data);
+});
+taskRoutes.post("/:id/comments", async (c) => {
+  const body = await c.req.json();
+  const res = await apiClient.post(`tasks/${c.req.param("id")}/comments`, { json: body, headers: { cookie: hdr(c) }, throwHttpErrors: false });
+  const data: any = await res.json(); c.status(res.status as any); return c.json(data);
+});
+taskRoutes.delete("/:id/comments/:commentId", async (c) => {
+  const { id, commentId } = c.req.param();
+  const res = await apiClient.delete(`tasks/${id}/comments/${commentId}`, { headers: { cookie: hdr(c) }, throwHttpErrors: false });
+  const data: any = await res.json(); c.status(res.status as any); return c.json(data);
+});
+
 export { taskRoutes };

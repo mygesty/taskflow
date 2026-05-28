@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { SubTaskList } from "@/components/task/SubTaskList";
 import { LabelSelect } from "@/components/task/LabelSelect";
+import { CommentList } from "@/components/comment/CommentList";
+import { CommentInput } from "@/components/comment/CommentInput";
 import { useUpdateTask, useDeleteTask, useAssignMember, useRemoveAssignee } from "@/hooks/useTasks";
 import { useWorkspaceOverview } from "@/hooks/useWorkspaces";
 import { X, Trash2, Plus } from "lucide-react";
@@ -196,6 +198,13 @@ export function TaskDetailPanel({ task, workspaceId, onClose }: TaskDetailPanelP
 
         {/* SubTasks */}
         <SubTaskList taskId={task.id} subTasks={task.subTasks || []} />
+
+        {/* Comments */}
+        <div className="space-y-3">
+          <label className="text-xs font-medium text-muted-foreground">Comments</label>
+          <CommentList taskId={task.id} />
+          <CommentInput taskId={task.id} workspaceId={workspaceId} />
+        </div>
       </div>
 
       {/* Footer */}
