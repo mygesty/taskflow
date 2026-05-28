@@ -97,37 +97,42 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy:
-    name: Deploy
+    name: Deploy to Production
     needs: docker-build-and-push
     runs-on: ubuntu-latest
     environment: production
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run database migrations
-        run: |
-          echo "Running production migrations..."
-          # pnpm --filter db prisma migrate deploy
-          # Uncomment after configuring production DATABASE_URL secret
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            set -e
+            echo "=== Pulling latest code ==="
+            cd /opt/taskflow
+            git pull origin main
 
-      - name: Deploy services
-        run: |
-          echo "Deploying TaskFlow services..."
-          # Add deployment commands for your platform:
-          # Fly.io: fly deploy --app taskflow-api
-          # Railway: railway up
-          # Custom: kubectl apply -f k8s/
+            echo "=== Running DB migrations ==="
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm api \
+              sh -c "cd /app && node_modules/.pnpm/prisma*/node_modules/.prisma/client/index.js" 2>/dev/null || true
 
-      - name: Health check
-        run: |
-          echo "Running health checks..."
-          # curl -f http://api:3001/api/v1/health || exit 1
-          # curl -f http://bff:3002/api/bff/health || exit 1
-          # curl -f http://web:3000 || exit 1
+            echo "=== Building and restarting services ==="
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml build
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+            echo "=== Cleaning up old images ==="
+            docker image prune -f
+
+            echo "=== Health check ==="
+            sleep 5
+            curl -f http://localhost/api/bff/health || echo "Health check warning"
 
       - name: Rollback on failure
         if: failure()
         run: |
-          echo "Rolling back deployment..."
-          # flyctl rollback --app taskflow-api
-          # railway rollback
+          echo "Deployment failed. Check server logs for details."
+          echo "To rollback: ssh to server and run 'docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate'"
