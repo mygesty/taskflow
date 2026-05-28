@@ -7,6 +7,7 @@ import { authRoutes } from "./routes/auth";
 import { workspaceRoutes } from "./routes/workspace";
 import { boardRoutes } from "./routes/board";
 import { taskRoutes } from "./routes/task";
+import { notificationRoutes } from "./routes/notification";
 
 const labelsApp = new Hono();
 labelsApp.use("*", async (c, next) => {
@@ -42,6 +43,7 @@ app.route("/api/bff/workspaces", workspaceRoutes);
 app.route("/api/bff/boards", boardRoutes);
 app.route("/api/bff/tasks", taskRoutes);
 app.route("/api/bff/labels", labelsApp);
+app.route("/api/bff/me/notifications", notificationRoutes);
 
 app.get("/api/bff/health", async (c) => {
   try {

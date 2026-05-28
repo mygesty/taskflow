@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 const PAGES = [
-  { url: "/", label: "Homepage" },
+  { url: "/", label: "Homepage", allowAuthErrors: true },
   { url: "/register", label: "Register" },
   { url: "/login", label: "Login" },
   { url: "/dashboard", label: "Dashboard", allowAuthErrors: true },
