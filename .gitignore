@@ -1,0 +1,57 @@
+# 依赖
+node_modules/
+.pnpm-store/
+
+# 构建产物
+.turbo/
+.next/
+dist/
+out/
+build/
+*.tsbuildinfo
+
+# 环境变量与密钥
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.staging.local
+.env.production.local
+!.env.example
+
+# 测试产物
+coverage/
+playwright-report/
+test-results/
+blob-report/
+ playwright/.cache/
+
+# Prisma
+packages/db/prisma/migrations/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+
+# IDE
+.idea/
+*.iml
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# 日志
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 驭缰工程运行时状态
+claude-progress.txt

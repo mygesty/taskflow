@@ -1,0 +1,62 @@
+# TaskFlow — 机器可读文件索引
+
+## 项目根目录
+- 需求.md — 产品需求文档（中文，完整特性规格）
+- 开发计划.md — 开发计划（77步，P0~P8阶段，每步对应一次提交）
+- AGENTS.md — 通用 Agent 指令（目录式）
+- CLAUDE.md — Claude Code 专用配置
+- init.sh — 会话引导脚本
+- features.json — 特性清单（含状态）
+- agents.json — 活跃 Agent 清单
+- turbo.json — Turborepo 任务配置
+- pnpm-workspace.yaml — 工作区包定义
+- package.json — 根脚本与开发依赖
+- .env.example — 环境变量模板
+- docker-compose.yml — 本地开发服务编排
+
+## 文档 (docs/)
+- docs/ARCHITECTURE.md — 系统架构概览
+- docs/constitution.md — 项目身份与价值观
+- docs/governance.md — 自治范围与安全规则
+- docs/project-structure.md — 脚手架规则与命名
+- docs/FRONTEND.md — 前端约定
+- docs/BACKEND.md — 后端约定
+- docs/BFF.md — BFF 层约定
+- docs/QUALITY_SCORE.md — 各领域质量记分卡
+- docs/SECURITY.md — 安全要求
+- docs/RELIABILITY.md — 可靠性要求
+- docs/decisions/ — 架构决策记录 (ADR)
+- docs/features/ — 按特性的规格流水线
+- docs/features/feat-001/ — 认证：注册、登录、JWT
+- docs/features/feat-002/ — 工作区：增删改查、成员、角色
+- docs/features/feat-003/ — 看板：增删改查、列、排序
+- docs/features/feat-004/ — 任务：增删改查、指派、子任务、标签
+- docs/features/feat-005/ — 拖拽：dnd-kit、乐观更新、移动
+- docs/features/feat-006/ — 评论：@提及、通知触发
+- docs/features/feat-007/ — 通知：铃铛、下拉、已读状态
+- docs/features/feat-008/ — 看板数据：统计、燃尽图、工作量
+
+## 技能 (skills/)
+- skills/session-start.skill.md — 定位会话，注册 Agent
+- skills/session-end.skill.md — 验证、提交、交接
+- skills/implement-feature.skill.md — 规格驱动实现
+- skills/new-feature.skill.md — 创建新特性条目
+- skills/run-tests.skill.md — 运行测试（含重试逻辑）
+- skills/entropy-check.skill.md — 查找漂移与死代码
+
+## 模式 (schemas/)
+- schemas/features.schema.json — 特性清单模式
+- schemas/agents.schema.json — Agent 清单模式
+
+## 应用
+- apps/web/ — Next.js 15 前端 (App Router, :3000)
+- apps/bff/ — Hono BFF 层 (独立服务, :3002)
+- apps/api/ — Next.js 15 后端 (API Routes, :3001)
+
+## 包
+- packages/shared/ — 共享类型、常量、工具
+- packages/db/ — Prisma 客户端、模式、迁移、种子
+
+## CI/CD
+- .github/workflows/ci.yml — CI 流水线 (PR 触发)
+- .github/workflows/deploy.yml — CD 流水线 (main 推送触发)

@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TaskFlow Agent Manifest",
+  "type": "object",
+  "required": ["agents"],
+  "properties": {
+    "agents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "provider", "model", "status", "heartbeat"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string",
+            "enum": ["opencode", "claude-code", "copilot", "cursor", "codex"]
+          },
+          "model": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "done", "blocked", "idle"]
+          },
+          "currentFeature": {
+            "type": ["string", "null"]
+          },
+          "heartbeat": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}

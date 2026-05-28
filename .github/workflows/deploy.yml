@@ -1,0 +1,133 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: "20"
+  PNPM_VERSION: "9"
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository }}
+
+jobs:
+  test:
+    name: Full Test Suite
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: taskflow
+          POSTGRES_PASSWORD: taskflow
+          POSTGRES_DB: taskflow_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+    env:
+      DATABASE_URL: postgresql://taskflow:taskflow@localhost:5432/taskflow_test
+      REDIS_URL: redis://localhost:6379
+      JWT_SECRET: ci-deploy-secret-key-minimum-32-characters-long
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm --filter db prisma generate
+      - run: pnpm --filter db prisma migrate deploy
+      - run: pnpm test:unit
+      - run: pnpm test:integration
+      - run: pnpm build
+      - run: pnpm test:e2e
+
+  docker-build-and-push:
+    name: Build & Push Docker Images
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        app: [web, bff, api]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-${{ matrix.app }}
+          tags: |
+            type=sha
+            type=ref,event=branch
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./apps/${{ matrix.app }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy
+    needs: docker-build-and-push
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run database migrations
+        run: |
+          echo "Running production migrations..."
+          # pnpm --filter db prisma migrate deploy
+          # Uncomment after configuring production DATABASE_URL secret
+
+      - name: Deploy services
+        run: |
+          echo "Deploying TaskFlow services..."
+          # Add deployment commands for your platform:
+          # Fly.io: fly deploy --app taskflow-api
+          # Railway: railway up
+          # Custom: kubectl apply -f k8s/
+
+      - name: Health check
+        run: |
+          echo "Running health checks..."
+          # curl -f http://api:3001/api/v1/health || exit 1
+          # curl -f http://bff:3002/api/bff/health || exit 1
+          # curl -f http://web:3000 || exit 1
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "Rolling back deployment..."
+          # flyctl rollback --app taskflow-api
+          # railway rollback

@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TaskFlow Feature Backlog",
+  "type": "object",
+  "required": ["features"],
+  "properties": {
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "category", "priority", "status", "steps"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^feat-\\d{3}$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 5
+          },
+          "category": {
+            "type": "string",
+            "enum": ["auth", "workspace", "board", "task", "comment", "notification", "dashboard"]
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": ["failing", "in_progress", "passing"]
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          }
+        }
+      }
+    }
+  }
+}

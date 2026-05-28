@@ -1,0 +1,156 @@
+{
+  "features": [
+    {
+      "id": "feat-001",
+      "title": "User registration and login",
+      "category": "auth",
+      "priority": 1,
+      "status": "failing",
+      "dependsOn": [],
+      "spec": "docs/features/feat-001/requirements.md",
+      "steps": [
+        "Navigate to /register",
+        "Fill email, name, and password (8+ chars with upper/lower/digit)",
+        "Submit form → verify user created in DB, redirected to dashboard",
+        "Duplicate email submission → verify 409 CONFLICT response",
+        "Logout from dashboard",
+        "Login with same credentials → verify JWT tokens set in httpOnly cookies",
+        "Wait for access token expiry → verify auto-refresh works",
+        "Login with wrong password → verify 401 with clear error"
+      ]
+    },
+    {
+      "id": "feat-002",
+      "title": "Create and manage workspace",
+      "category": "workspace",
+      "priority": 2,
+      "status": "failing",
+      "dependsOn": ["feat-001"],
+      "spec": "docs/features/feat-002/requirements.md",
+      "steps": [
+        "Login and navigate to dashboard",
+        "Click 'New Workspace' → enter name and description",
+        "Submit → verify workspace appears in sidebar",
+        "Verify creator is OWNER of workspace",
+        "Invite a member by email → verify member appears in member list",
+        "Member tries to invite another → verify 403 FORBIDDEN",
+        "Owner changes member role to Admin → verify role updated",
+        "Owner removes member → verify member removed from list",
+        "Delete workspace with confirmation → verify cascade deletion"
+      ]
+    },
+    {
+      "id": "feat-003",
+      "title": "Create board with default columns",
+      "category": "board",
+      "priority": 3,
+      "status": "failing",
+      "dependsOn": ["feat-001", "feat-002"],
+      "spec": "docs/features/feat-003/requirements.md",
+      "steps": [
+        "Open a workspace",
+        "Click 'New Board' → enter board title",
+        "Submit → verify board created with Todo, In Progress, Review, Done columns",
+        "Add custom column → verify appears at end of column list",
+        "Rename a column → verify title updated",
+        "Delete a column → verify its tasks migrate to left adjacent column",
+        "Drag column to reorder → verify position updated after refresh",
+        "Edit board title → verify updated",
+        "Delete board with confirmation → verify cascade deletion"
+      ]
+    },
+    {
+      "id": "feat-004",
+      "title": "Create and manage tasks",
+      "category": "task",
+      "priority": 4,
+      "status": "failing",
+      "dependsOn": ["feat-001", "feat-002", "feat-003"],
+      "spec": "docs/features/feat-004/requirements.md",
+      "steps": [
+        "Open a board",
+        "Click 'Add Task' on a column → fill title, description, priority, due date",
+        "Submit → verify task card appears at column bottom",
+        "Verify priority color on card (URGENT=red, HIGH=orange, MEDIUM=default, LOW=gray)",
+        "Assign a member → verify avatar shown on card",
+        "Open task detail side panel → edit title and priority",
+        "Add sub-tasks → verify progress shown on card (e.g. 2/5)",
+        "Add labels to task → verify labels shown on card",
+        "Set due date to tomorrow → verify TASK_DUE_SOON notification received",
+        "Delete task with confirmation → verify removed from column"
+      ]
+    },
+    {
+      "id": "feat-005",
+      "title": "Drag task between columns",
+      "category": "task",
+      "priority": 5,
+      "status": "failing",
+      "dependsOn": ["feat-004"],
+      "spec": "docs/features/feat-005/requirements.md",
+      "steps": [
+        "Open a board with tasks in multiple columns",
+        "Drag a task from Todo to In Progress → verify task moved",
+        "Verify assignees receive TASK_MOVED notification",
+        "Refresh page → verify task still in In Progress column",
+        "Drag task within same column to reorder → verify position changed",
+        "Simulate network failure during drag → verify UI rolls back to original position"
+      ]
+    },
+    {
+      "id": "feat-006",
+      "title": "Task comments with @mention",
+      "category": "comment",
+      "priority": 6,
+      "status": "failing",
+      "dependsOn": ["feat-004", "feat-002"],
+      "spec": "docs/features/feat-006/requirements.md",
+      "steps": [
+        "Open a task detail panel",
+        "Type @ in comment input → verify workspace member dropdown appears",
+        "Select a member → verify @Name inserted into text",
+        "Submit comment → verify comment appears at bottom of list",
+        "Verify @mentioned user receives COMMENT_MENTION notification",
+        "Verify comment shows author avatar, name, content, timestamp",
+        "Try to delete another user's comment → verify 403 FORBIDDEN"
+      ]
+    },
+    {
+      "id": "feat-007",
+      "title": "Notification list and mark as read",
+      "category": "notification",
+      "priority": 7,
+      "status": "failing",
+      "dependsOn": ["feat-004", "feat-006"],
+      "spec": "docs/features/feat-007/requirements.md",
+      "steps": [
+        "Trigger notifications: assign task, move task, @mention in comment",
+        "Click notification bell → verify dropdown shows recent notifications",
+        "Verify unread count badge matches number of new notifications",
+        "Click a notification → verify marked as read and navigated to task",
+        "Verify badge count decremented",
+        "Click 'Mark all as read' → verify badge disappears",
+        "Navigate to /notifications → verify paginated list displays",
+        "Verify notification content includes task title and trigger user"
+      ]
+    },
+    {
+      "id": "feat-008",
+      "title": "Data dashboard with task statistics",
+      "category": "dashboard",
+      "priority": 8,
+      "status": "failing",
+      "dependsOn": ["feat-004", "feat-007"],
+      "spec": "docs/features/feat-008/requirements.md",
+      "steps": [
+        "Open workspace dashboard page",
+        "Verify task status counts match actual board state",
+        "Verify member workload table shows assigned + completed per member",
+        "Verify burndown chart renders with ideal + actual lines",
+        "Switch time range (7d → 14d → 30d) → verify chart updates",
+        "Verify priority distribution chart renders",
+        "Navigate to workspace with no tasks → verify empty state displayed"
+      ]
+    }
+  ]
+}

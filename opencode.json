@@ -1,0 +1,17 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "opencode/glm-5.1",
+  "provider": "opencode",
+  "agents": {
+    "coder": {
+      "model": "opencode/glm-5.1",
+      "systemPrompt": "You are a coding agent for the TaskFlow project. Read AGENTS.md first. Follow the layer architecture strictly. One feature per session."
+    }
+  },
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+    }
+  }
+}

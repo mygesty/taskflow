@@ -1,0 +1,4 @@
+{
+  "$schema": "./schemas/agents.schema.json",
+  "agents": []
+}
