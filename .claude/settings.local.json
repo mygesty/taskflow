@@ -1,4 +1,27 @@
 {
+  "permissions": {
+    "allow": [
+      "mcp__filesystem__directory_tree",
+      "Bash(pnpm install *)",
+      "Bash(docker compose up *)",
+      "Bash(pnpm --filter @taskflow/api add redis)",
+      "Bash(npx shadcn@latest init -d -f)",
+      "Bash(npx shadcn@latest add Button Input Card Dialog DropdownMenu Avatar Badge -y)",
+      "Bash(npx shadcn@4.7.0 add Button Input Card Dialog DropdownMenu Avatar Badge -y)",
+      "Bash(npx shadcn@4.6.0 add Button Input Card Dialog DropdownMenu Avatar Badge -y)",
+      "Bash(pnpm typecheck *)",
+      "Bash(pnpm --filter @taskflow/db add bcryptjs)",
+      "Bash(pnpm --filter @taskflow/db add -D @types/bcryptjs @types/node)",
+      "Bash(pnpm --filter @taskflow/db typecheck)",
+      "Bash(pnpm --filter @taskflow/db prisma generate)",
+      "Bash(pnpm --filter @taskflow/db db:generate)",
+      "Bash(pnpm --filter @taskflow/db prisma migrate dev --name init)",
+      "Bash(pnpm --filter @taskflow/db db:migrate -- --name init)",
+      "Bash(npx prisma *)",
+      "Bash(docker exec test-cicd-postgres-1 *)",
+      "Bash(pnpm --filter @taskflow/db db:seed)"
+    ]
+  },
   "enabledMcpjsonServers": [
     "filesystem",
     "github"

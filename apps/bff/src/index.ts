@@ -3,6 +3,7 @@ import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 import { errorHandler } from "./middleware/errorHandler";
 import { authMiddleware } from "./middleware/auth";
+import { apiClient } from "./services/apiClient";
 
 const app = new Hono();
 
@@ -17,8 +18,34 @@ app.use(
 
 app.use("*", errorHandler);
 
-app.get("/api/bff/health", (c) => {
-  return c.json({ status: "ok", timestamp: new Date().toISOString() });
+app.get("/api/bff/health", async (c) => {
+  try {
+    const backendHealth = await apiClient.get("health").json<{
+      success: boolean;
+      data: Record<string, unknown>;
+    }>();
+
+    return c.json({
+      success: true,
+      data: {
+        bff: "ok",
+        backend: backendHealth.data,
+        timestamp: new Date().toISOString(),
+      },
+    });
+  } catch {
+    return c.json(
+      {
+        success: false,
+        data: {
+          bff: "ok",
+          backend: "unreachable",
+          timestamp: new Date().toISOString(),
+        },
+      },
+      502,
+    );
+  }
 });
 
 const port = Number(process.env.BFF_PORT) || 3002;

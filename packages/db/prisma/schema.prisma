@@ -31,6 +31,7 @@ model Workspace {
 
   members WorkspaceMember[]
   boards  Board[]
+  labels  Label[]
 
   @@map("workspaces")
 }
@@ -85,7 +86,7 @@ model Task {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  column     TaskColumn  @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  column     BoardColumn @relation(fields: [columnId], references: [id], onDelete: Cascade)
   assignees  TaskAssignee[]
   comments   Comment[]
   labels     TaskLabel[]
@@ -93,18 +94,6 @@ model Task {
   notifications Notification[]
 
   @@map("tasks")
-}
-
-model TaskColumn {
-  id       String @id @default(uuid())
-  boardId  String
-  title    String
-  position Int
-
-  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
-  tasks Task[]
-
-  @@map("board_columns")
 }
 
 model TaskAssignee {
