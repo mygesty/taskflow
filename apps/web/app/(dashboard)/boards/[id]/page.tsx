@@ -96,16 +96,7 @@ export default function BoardPage() {
   const displayColumns = (columnsState.length > 0 ? columnsState : serverColumns) || [];
 
   // Sync local state with server data — use JSON compare to avoid infinite loop
-  // Include assignee IDs so assign/unassign refreshes propagate to the UI
-  const serverKey = serverColumns
-    ? JSON.stringify(
-        serverColumns.map((c: any) => ({
-          id: c.id,
-          n: c.tasks?.length || 0,
-          a: c.tasks?.map((t: any) => (t.assignees || []).map((x: any) => x.user.id)),
-        })),
-      )
-    : "";
+  const serverKey = serverColumns ? JSON.stringify(serverColumns) : "";
   useEffect(() => {
     if (serverColumns) setColumnsState(serverColumns);
   // eslint-disable-next-line react-hooks/exhaustive-deps

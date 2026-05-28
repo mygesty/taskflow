@@ -44,6 +44,8 @@ export function useUpdateTask() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["boards"] });
       qc.invalidateQueries({ queryKey: ["tasks"] });
+      qc.refetchQueries({ queryKey: ["boards"] });
+      qc.refetchQueries({ queryKey: ["tasks"] });
     },
   });
 }
