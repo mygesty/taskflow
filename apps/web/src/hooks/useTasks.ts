@@ -67,6 +67,8 @@ export function useAssignMember(taskId: string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["boards"] });
       qc.invalidateQueries({ queryKey: ["tasks"] });
+      qc.refetchQueries({ queryKey: ["boards"] });
+      qc.refetchQueries({ queryKey: ["tasks"] });
     },
   });
 }
@@ -79,6 +81,8 @@ export function useRemoveAssignee(taskId: string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["boards"] });
       qc.invalidateQueries({ queryKey: ["tasks"] });
+      qc.refetchQueries({ queryKey: ["boards"] });
+      qc.refetchQueries({ queryKey: ["tasks"] });
     },
   });
 }

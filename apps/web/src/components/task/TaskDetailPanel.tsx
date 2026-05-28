@@ -10,6 +10,7 @@ import { CommentList } from "@/components/comment/CommentList";
 import { CommentInput } from "@/components/comment/CommentInput";
 import { useUpdateTask, useDeleteTask, useAssignMember, useRemoveAssignee } from "@/hooks/useTasks";
 import { useWorkspaceOverview } from "@/hooks/useWorkspaces";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { X, Trash2, Plus } from "lucide-react";
 
 const PRIORITIES = [
@@ -50,6 +51,7 @@ export function TaskDetailPanel({ task, workspaceId, onClose }: TaskDetailPanelP
   }, [task]);
 
   const [assignPopoverOpen, setAssignPopoverOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const members = overview?.members || [];
   const assignedIds = new Set((task.assignees || []).map((a) => a.user.id));
@@ -63,9 +65,7 @@ export function TaskDetailPanel({ task, workspaceId, onClose }: TaskDetailPanelP
   };
 
   const handleDelete = () => {
-    if (confirm("Delete this task?")) {
-      deleteTask.mutate(task.id, { onSuccess: onClose });
-    }
+    setDeleteDialogOpen(true);
   };
 
   return (
@@ -213,6 +213,19 @@ export function TaskDetailPanel({ task, workspaceId, onClose }: TaskDetailPanelP
           <Trash2 className="mr-1.5 size-4" />Delete Task
         </Button>
       </div>
+
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Delete Task"
+        description="This task and all its comments, subtasks, and assignees will be permanently deleted."
+        confirmLabel="Delete"
+        variant="destructive"
+        loading={deleteTask.isPending}
+        onConfirm={() => {
+          deleteTask.mutate(task.id, { onSuccess: () => { setDeleteDialogOpen(false); onClose(); } });
+        }}
+      />
     </div>
   );
 }

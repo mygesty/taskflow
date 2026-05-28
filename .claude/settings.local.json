@@ -56,7 +56,8 @@
       "Bash(curl -s -X POST http://localhost:3001/api/v1/auth/register -H \"Content-Type: application/json\" -d '{\"email\":\"e2e-verify@test.com\",\"password\":\"Abcdef1g\",\"name\":\"Verify\"}')",
       "Bash(curl -s -X POST http://localhost:3001/api/v1/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"e2e-verify@test.com\",\"password\":\"Abcdef1g\"}')",
       "Bash(curl *)",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Bash(python -c \"import sys,json; t=json.load\\(sys.stdin\\)['data']; print\\('assignees:', len\\(t.get\\('assignees',[]\\)\\)\\)\")"
     ]
   },
   "enabledMcpjsonServers": [

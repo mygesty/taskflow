@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { DndContext, DragOverlay, useDraggable, useDroppable, PointerSensor, KeyboardSensor, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
+import { DndContext, useDroppable, PointerSensor, KeyboardSensor, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
 import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,10 +17,11 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useBoardDetail, useAddColumn, useDeleteColumn } from "@/hooks/useBoards";
-import { useCreateTask, useDeleteTask, useAssignMember, useRemoveAssignee, useMoveTask } from "@/hooks/useTasks";
+import { useCreateTask, useDeleteTask, useMoveTask } from "@/hooks/useTasks";
 import { TaskDetailPanel } from "@/components/task/TaskDetailPanel";
-import { useWorkspaceOverview } from "@/hooks/useWorkspaces";
-import { Plus, MoreHorizontal, Trash2, UserPlus, GripVertical, X } from "lucide-react";
+import { DraggableCard } from "@/components/task/DraggableCard";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { Plus, MoreHorizontal, Trash2, X } from "lucide-react";
 
 const colSchema = z.object({ title: z.string().min(1).max(100) });
 const taskSchema = z.object({
@@ -34,84 +35,9 @@ const PRIORITIES = [
   { value: "LOW", label: "Low" }, { value: "MEDIUM", label: "Medium" },
   { value: "HIGH", label: "High" }, { value: "URGENT", label: "Urgent" },
 ];
-const priorityColors: Record<string, string> = {
-  URGENT: "border-l-red-500", HIGH: "border-l-orange-400",
-  MEDIUM: "border-l-muted-foreground", LOW: "border-l-gray-300",
-};
 
-function DraggableCard({ task, workspaceId, onClick }: { task: any; workspaceId: string; onClick?: () => void }) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: task.id, data: { task, sourceColumnId: task.columnId } });
-  const style = transform ? { transform: `translate(${transform.x}px, ${transform.y}px)` } : undefined;
-
-  const assignMember = useAssignMember(task.id);
-  const removeAssignee = useRemoveAssignee(task.id);
-  const deleteTask = useDeleteTask();
-  const { data: overview } = useWorkspaceOverview(workspaceId);
-  const members = overview?.members || [];
-  const assignedIds = new Set((task.assignees || []).map((a: any) => a.user.id));
-  const unassigned = members.filter((m: any) => !assignedIds.has(m.userId));
-
-  return (
-    <div
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      style={{ ...style, touchAction: "none" }}
-      className={`rounded-md border border-border bg-card p-2.5 shadow-sm border-l-2 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow ${priorityColors[task.priority] || ""} ${isDragging ? "opacity-50" : ""}`}
-      onClick={(e) => { if (!(e.target as HTMLElement).closest('button,[role="menuitem"],a')) onClick?.(); }}
-    >
-      <div className="flex items-start gap-1">
-        <span className="mt-0.5 shrink-0 text-muted-foreground/30">
-          <GripVertical className="size-3.5" />
-        </span>
-        <p className="flex-1 text-sm font-medium leading-snug">{task.title}</p>
-        <DropdownMenu>
-          <DropdownMenuTrigger className="flex size-5 shrink-0 items-center justify-center rounded hover:bg-muted">
-            <MoreHorizontal className="size-3" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); if (confirm("Delete task?")) deleteTask.mutate(task.id); }}>
-              <Trash2 className="mr-2 size-3.5" />Delete Task
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="mt-2 flex flex-wrap items-center gap-1.5">
-        {task.priority && task.priority !== "MEDIUM" && (
-          <Badge variant={task.priority === "URGENT" ? "default" : task.priority === "HIGH" ? "secondary" : "outline"} className="text-[10px]">{task.priority}</Badge>
-        )}
-        {(task.assignees || []).map((a: any) => (
-          <div key={a.user.id} className="flex size-5 cursor-pointer items-center justify-center rounded-full bg-primary/10 text-[9px] font-medium text-primary hover:ring-2 hover:ring-destructive/50" title={`${a.user.name} — unassign`} onClick={(e) => { e.stopPropagation(); removeAssignee.mutate(a.user.id); }}>
-            {a.user.name.charAt(0)}
-          </div>
-        ))}
-        <DropdownMenu>
-          <DropdownMenuTrigger className="flex size-5 items-center justify-center rounded-full border border-dashed border-muted-foreground/30 text-muted-foreground hover:border-primary hover:text-primary" onClick={(e) => e.stopPropagation()}>
-            <UserPlus className="size-3" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="max-h-40 overflow-y-auto">
-            {unassigned.map((m: any) => (
-              <DropdownMenuItem key={m.userId} onClick={(e) => { e.stopPropagation(); assignMember.mutate(m.userId); }}>
-                <div className="flex size-4 items-center justify-center rounded-full bg-muted text-[9px] font-medium mr-2">{m.user.name.charAt(0)}</div>
-                {m.user.name}
-              </DropdownMenuItem>
-            ))}
-            {unassigned.length === 0 && <div className="px-2 py-2 text-xs text-muted-foreground">No members</div>}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        {(task.labels || []).map((l: any) => (
-          <span key={l.label.id} className="rounded px-1.5 py-0.5 text-[10px] font-medium" style={{ backgroundColor: l.label.color + "20", color: l.label.color }}>{l.label.name}</span>
-        ))}
-        {(task.subTasks || []).length > 0 && (
-          <span className="text-[10px] text-muted-foreground">{task.subTasks.filter((s: any) => s.completed).length}/{task.subTasks.length}</span>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function DroppableColumn({ col, boardWorkspaceId, selectedTaskId, onTaskClick, onAddTask }: {
-  col: any; boardWorkspaceId: string; selectedTaskId: string | null; onTaskClick: (id: string) => void; onAddTask: (colId: string) => void;
+function DroppableColumn({ col, boardWorkspaceId, selectedTaskId, onTaskClick, onAddTask, onDeleteTask }: {
+  col: any; boardWorkspaceId: string; selectedTaskId: string | null; onTaskClick: (id: string) => void; onAddTask: (colId: string) => void; onDeleteTask?: (id: string) => void;
 }) {
   const { isOver, setNodeRef } = useDroppable({ id: col.id });
   const deleteCol = useDeleteColumn(col.boardId);
@@ -125,13 +51,13 @@ function DroppableColumn({ col, boardWorkspaceId, selectedTaskId, onTaskClick, o
         <DropdownMenu>
           <DropdownMenuTrigger className="flex size-6 items-center justify-center rounded hover:bg-muted"><MoreHorizontal className="size-3.5" /></DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => { if (confirm("Delete column?")) deleteCol.mutate({ boardId: col.boardId, columnId: col.id }); }}><Trash2 className="mr-2 size-3.5" />Delete Column</DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); deleteCol.mutate({ boardId: col.boardId, columnId: col.id }); }}><Trash2 className="mr-2 size-3.5" />Delete Column</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
       <div className="flex-1 space-y-2 px-2 pb-2 min-h-[100px]">
         {(col.tasks || []).map((task: any) => (
-          <DraggableCard key={task.id} task={task} workspaceId={boardWorkspaceId} onClick={() => onTaskClick(task.id)} />
+          <DraggableCard key={task.id} task={task} workspaceId={boardWorkspaceId} onClick={() => onTaskClick(task.id)} onDelete={onDeleteTask} />
         ))}
       </div>
       <div className="px-2 pb-2">
@@ -148,6 +74,7 @@ export default function BoardPage() {
   const { data, isLoading } = useBoardDetail(id);
   const addCol = useAddColumn(id);
   const createTask = useCreateTask();
+  const deleteTask = useDeleteTask();
   const moveTask = useMoveTask();
 
   const [colDialogOpen, setColDialogOpen] = useState(false);
@@ -156,6 +83,7 @@ export default function BoardPage() {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const [columnsState, setColumnsState] = useState<any[]>([]);
+  const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null);
 
   const { register: regCol, handleSubmit: handleCol, reset: resetCol, formState: { errors: colErrs } } = useForm({ resolver: zodResolver(colSchema) });
   const { register, handleSubmit, reset, control, formState: { errors } } = useForm<any>({
@@ -168,7 +96,16 @@ export default function BoardPage() {
   const displayColumns = (columnsState.length > 0 ? columnsState : serverColumns) || [];
 
   // Sync local state with server data — use JSON compare to avoid infinite loop
-  const serverKey = serverColumns ? JSON.stringify(serverColumns.map((c: any) => ({ id: c.id, taskCount: c.tasks?.length || 0 }))) : "";
+  // Include assignee IDs so assign/unassign refreshes propagate to the UI
+  const serverKey = serverColumns
+    ? JSON.stringify(
+        serverColumns.map((c: any) => ({
+          id: c.id,
+          n: c.tasks?.length || 0,
+          a: c.tasks?.map((t: any) => (t.assignees || []).map((x: any) => x.user.id)),
+        })),
+      )
+    : "";
   useEffect(() => {
     if (serverColumns) setColumnsState(serverColumns);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -251,6 +188,7 @@ export default function BoardPage() {
                 boardWorkspaceId={board.workspaceId}
                 selectedTaskId={selectedTaskId}
                 onTaskClick={setSelectedTaskId}
+                onDeleteTask={(taskId: string) => setDeleteTaskId(taskId)}
                 onAddTask={(colId) => { setSelectedColumn(colId); reset({ title: "", description: "", priority: "MEDIUM", dueDate: "" }); setTaskDialogOpen(true); }}
               />
             ))}
@@ -266,6 +204,21 @@ export default function BoardPage() {
       {selectedTask && (
         <TaskDetailPanel task={selectedTask} workspaceId={board.workspaceId} onClose={() => setSelectedTaskId(null)} />
       )}
+
+      <ConfirmDialog
+        open={!!deleteTaskId}
+        onOpenChange={(open) => { if (!open) setDeleteTaskId(null); }}
+        title="Delete Task"
+        description="This task will be permanently deleted. This action cannot be undone."
+        confirmLabel="Delete"
+        variant="destructive"
+        loading={deleteTask.isPending}
+        onConfirm={() => {
+          if (deleteTaskId) {
+            deleteTask.mutate(deleteTaskId, { onSuccess: () => setDeleteTaskId(null) });
+          }
+        }}
+      />
 
       <Dialog open={colDialogOpen} onOpenChange={setColDialogOpen}>
         <DialogContent>

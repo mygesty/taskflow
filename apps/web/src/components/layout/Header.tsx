@@ -48,7 +48,7 @@ export function Header() {
 
       <div className="flex items-center gap-1">
         {/* Theme Toggle */}
-        <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
+        <Button variant="ghost" size="icon" onClick={toggleTheme} title="Toggle theme">
           {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
         </Button>
 

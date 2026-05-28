@@ -140,7 +140,7 @@ test.describe("Theme E2E — Toggle", () => {
     expect(hasDark).toBe(true);
 
     // Click the theme toggle button (Sun/Moon icon)
-    const toggleBtn = page.locator('button[aria-label="Toggle theme"]');
+    const toggleBtn = page.locator('button[title="Toggle theme"]');
     await expect(toggleBtn).toBeVisible({ timeout: 3_000 });
     await toggleBtn.click();
     await page.waitForTimeout(300);
@@ -160,7 +160,7 @@ test.describe("Theme E2E — Toggle", () => {
     await page.goto(`${BASE}/dashboard`);
 
     // Switch to light
-    const toggleBtn = page.locator('button[aria-label="Toggle theme"]');
+    const toggleBtn = page.locator('button[title="Toggle theme"]');
     await toggleBtn.click();
     await page.waitForTimeout(300);
 

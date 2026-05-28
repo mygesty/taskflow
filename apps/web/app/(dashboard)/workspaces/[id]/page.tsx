@@ -16,6 +16,7 @@ import {
 import { useWorkspaceOverview, useInviteMember, useRemoveMember, useDeleteWorkspace } from "@/hooks/useWorkspaces";
 import { useBoards, useCreateBoard, useDeleteBoard } from "@/hooks/useBoards";
 import { useAuthStore } from "@/stores/auth-store";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { UserMinus, Trash2, Plus, LayoutGrid, ArrowRight } from "lucide-react";
 
 const roleColors: Record<string, "default" | "secondary" | "outline"> = { OWNER: "default", ADMIN: "secondary", MEMBER: "outline" };
@@ -34,6 +35,8 @@ export default function WorkspacePage() {
   const createBoard = useCreateBoard();
   const deleteBoard = useDeleteBoard(id);
   const [boardDialogOpen, setBoardDialogOpen] = useState(false);
+  const [deleteWsDialogOpen, setDeleteWsDialogOpen] = useState(false);
+  const [deleteBoardId, setDeleteBoardId] = useState<string | null>(null);
 
   const { register: regInvite, handleSubmit: handleInvite, reset: resetInvite, formState: { errors: inviteErrs } } = useForm({ resolver: zodResolver(inviteSchema) });
   const { register: regBoard, handleSubmit: handleBoard, reset: resetBoard, formState: { errors: boardErrs } } = useForm({ resolver: zodResolver(boardSchema) });
@@ -61,7 +64,7 @@ export default function WorkspacePage() {
             {workspace.description && <p className="mt-1 text-sm text-muted-foreground">{workspace.description}</p>}
           </div>
           {isOwner && (
-            <Button variant="destructive" size="sm" onClick={() => { if (confirm("Delete this workspace?")) deleteWs.mutate(id, { onSuccess: () => router.push("/dashboard") }); }}>
+            <Button variant="destructive" size="sm" onClick={() => setDeleteWsDialogOpen(true)}>
               <Trash2 className="mr-1.5 size-4" />Delete
             </Button>
           )}
@@ -88,7 +91,7 @@ export default function WorkspacePage() {
                       </div>
                       <div className="flex items-center gap-1">
                         {isAdmin && (
-                          <Button variant="ghost" size="icon-xs" onClick={(e) => { e.stopPropagation(); if (confirm("Delete this board?")) deleteBoard.mutate(b.id); }}>
+                          <Button variant="ghost" size="icon-xs" onClick={(e) => { e.stopPropagation(); setDeleteBoardId(b.id); }}>
                             <Trash2 className="size-3 text-muted-foreground" />
                           </Button>
                         )}
@@ -173,6 +176,28 @@ export default function WorkspacePage() {
           </form>
         </DialogContent>
       </Dialog>
+      <ConfirmDialog
+        open={deleteWsDialogOpen}
+        onOpenChange={setDeleteWsDialogOpen}
+        title="Delete Workspace"
+        description="This workspace and all its boards, columns, and tasks will be permanently deleted. This cannot be undone."
+        confirmLabel="Delete"
+        variant="destructive"
+        loading={deleteWs.isPending}
+        onConfirm={() => deleteWs.mutate(id, { onSuccess: () => router.push("/dashboard") })}
+      />
+      <ConfirmDialog
+        open={!!deleteBoardId}
+        onOpenChange={(open) => { if (!open) setDeleteBoardId(null); }}
+        title="Delete Board"
+        description="This board and all its columns and tasks will be permanently deleted."
+        confirmLabel="Delete"
+        variant="destructive"
+        loading={deleteBoard.isPending}
+        onConfirm={() => {
+          if (deleteBoardId) deleteBoard.mutate(deleteBoardId, { onSuccess: () => setDeleteBoardId(null) });
+        }}
+      />
     </AppShell>
   );
 }
