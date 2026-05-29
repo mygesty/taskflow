@@ -3,19 +3,10 @@ pipeline {
 
   environment {
     COMPOSE_FILES = "--env-file config/prod.env -f docker-compose.yml -f docker-compose.prod.yml"
-    PROJECT_DIR   = "/workspace"
+    PROJECT_DIR   = "/var/jenkins_home/workspace/taskflow"
   }
 
   stages {
-    stage('Pull Latest Code') {
-      steps {
-        dir("${PROJECT_DIR}") {
-          sh 'git checkout main'
-          sh 'git pull origin main'
-        }
-      }
-    }
-
     stage('Build Images') {
       steps {
         dir("${PROJECT_DIR}") {
