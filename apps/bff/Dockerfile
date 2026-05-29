@@ -4,8 +4,11 @@ WORKDIR /app
 
 FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY apps/api/package.json ./apps/api/
 COPY apps/bff/package.json ./apps/bff/
+COPY apps/web/package.json ./apps/web/
 COPY packages/shared/package.json ./packages/shared/
+COPY packages/db/package.json ./packages/db/
 RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
@@ -19,8 +22,6 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 bff
 
 COPY --from=builder /app/apps/bff/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/apps/bff/package.json ./package.json
 
 USER bff
 EXPOSE 3002
