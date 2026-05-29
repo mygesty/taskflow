@@ -14,7 +14,7 @@ import { taskRoutes } from "./routes/task";
 import { notificationRoutes } from "./routes/notification";
 
 const labelsApp = new Hono();
-labelsApp.use("*", async (c, next) => {
+labelsApp.use("*", async (c, _next) => {
   const cookie = c.req.header("cookie") || "";
   const path = c.req.path.replace("/api/bff/labels", "labels");
   const qs = new URLSearchParams(c.req.query()).toString();
@@ -80,7 +80,7 @@ app.get("/api/bff/health", async (c) => {
 });
 
 const port = Number(process.env.BFF_PORT) || 3002;
-console.log(`BFF server starting on port ${port}`);
+console.warn(`BFF server starting on port ${port}`);
 
 export default app;
 

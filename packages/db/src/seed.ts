@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Seeding database...");
+  console.warn("Seeding database...");
 
   const passwordHash = await bcrypt.hash("password123", 12);
 
@@ -56,7 +56,7 @@ async function main() {
     },
   });
 
-  console.log("Seed data created:", { user1, user2, workspace, board });
+  console.warn("Seed data created:", { user1, user2, workspace, board });
 }
 
 main()

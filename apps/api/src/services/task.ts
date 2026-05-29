@@ -110,7 +110,7 @@ export const taskService = {
     return subTaskRepository.update(subTaskId, data);
   },
 
-  async deleteSubTask(subTaskId: string, userId: string) {
+  async deleteSubTask(subTaskId: string, _userId: string) {
     await subTaskRepository.delete(subTaskId);
   },
 

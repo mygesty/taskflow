@@ -1,5 +1,4 @@
 import { prisma } from "@/providers/prisma";
-import type { Workspace, WorkspaceMember } from "@prisma/client";
 
 export const workspaceRepository = {
   async findUserWorkspaces(userId: string) {

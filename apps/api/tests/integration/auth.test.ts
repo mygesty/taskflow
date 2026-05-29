@@ -69,9 +69,15 @@ describe("Auth Service Integration", () => {
   });
 
   describe("refreshToken", () => {
+    const refreshEmail = "refresh-test@example.com";
+
+    beforeEach(async () => {
+      await prisma.user.deleteMany({ where: { email: refreshEmail } });
+    });
+
     it("returns new tokens with valid refresh token", async () => {
       const { refreshToken } = await authService.register({
-        email: "refresh-test@example.com",
+        email: refreshEmail,
         password: "Abcdef1g",
         name: "Refresh Test",
       });

@@ -5,7 +5,7 @@ import { labelRepository } from "@/repositories/label";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ taskId: string }> }) {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     const { taskId } = await params;
     const labels = await labelRepository.findByTask(taskId);
     return ok(labels);

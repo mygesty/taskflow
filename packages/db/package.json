@@ -10,18 +10,18 @@
     "./seed": "./src/seed.ts"
   },
   "scripts": {
-    "db:generate": "node --env-file=../../config/dev.env ./node_modules/.bin/prisma generate",
-    "db:migrate": "node --env-file=../../config/dev.env ./node_modules/.bin/prisma migrate dev",
-    "db:migrate:deploy": "node --env-file=../../config/prod.env ./node_modules/.bin/prisma migrate deploy",
-    "db:seed": "node --env-file=../../config/dev.env ./node_modules/.bin/tsx src/seed.ts",
-    "db:studio": "node --env-file=../../config/dev.env ./node_modules/.bin/prisma studio",
+    "db:generate": "set NODE_OPTIONS=--import=../../scripts/load-env.mjs && prisma generate",
+    "db:migrate": "set NODE_OPTIONS=--import=../../scripts/load-env.mjs && prisma migrate dev",
+    "db:migrate:deploy": "set NODE_OPTIONS=--import=../../scripts/load-env.mjs && prisma migrate deploy",
+    "db:seed": "set NODE_OPTIONS=--import=../../scripts/load-env.mjs && tsx src/seed.ts",
+    "db:studio": "set NODE_OPTIONS=--import=../../scripts/load-env.mjs && prisma studio",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run",
     "clean": "rm -rf dist .turbo node_modules"
   },
   "dependencies": {
-    "@prisma/client": "^6.2.0",
+    "@prisma/client": "^6.19.3",
     "bcryptjs": "^2.4.3"
   },
   "devDependencies": {

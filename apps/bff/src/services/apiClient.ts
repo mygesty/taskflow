@@ -13,7 +13,7 @@ export const apiClient = ky.create({
   },
   hooks: {
     beforeRequest: [
-      (request) => {
+      (_request) => {
         // Forward authorization header from BFF request context
         // This will be set per-request in route handlers
       },

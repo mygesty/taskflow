@@ -3,14 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "node --env-file=../../config/dev.env ./node_modules/.bin/next dev --port 3001",
-    "build": "node --env-file=../../config/dev.env ./node_modules/.bin/next build",
-    "start": "node --env-file=../../config/prod.env ./node_modules/.bin/next start --port 3001",
+    "dev": "set NODE_OPTIONS=--import=../../scripts/load-env.mjs && next dev --port 3001",
+    "build": "set NODE_OPTIONS=--import=../../scripts/load-env.mjs && next build",
+    "start": "set NODE_OPTIONS=--import=../../scripts/load-env.mjs && next start --port 3001",
     "lint": "eslint src/ app/",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
-    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:integration": "set NODE_OPTIONS=--import=../../scripts/load-env.mjs && vitest run --config vitest.integration.config.ts",
     "clean": "rm -rf .next .turbo node_modules"
   },
   "dependencies": {

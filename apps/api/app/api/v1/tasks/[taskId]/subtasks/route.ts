@@ -5,7 +5,7 @@ import { subTaskRepository } from "@/repositories/subtask";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ taskId: string }> }) {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     const { taskId } = await params;
     const subTasks = await subTaskRepository.findByTask(taskId);
     return ok(subTasks);

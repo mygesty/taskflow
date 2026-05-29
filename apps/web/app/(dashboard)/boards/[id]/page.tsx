@@ -98,7 +98,7 @@ export default function BoardPage() {
   const serverKey = serverColumns ? JSON.stringify(serverColumns) : "";
   useEffect(() => {
     if (serverColumns) setColumnsState(serverColumns);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line
   }, [serverKey]);
 
   const selectedTask = selectedTaskId

@@ -4,7 +4,7 @@ import { taskService } from "@/services/task";
 
 export async function GET(request: NextRequest) {
   try {
-    const userId = await requireAuth();
+    await requireAuth();
     const { searchParams } = new URL(request.url);
     const boardId = searchParams.get("boardId");
     const columnId = searchParams.get("columnId");
