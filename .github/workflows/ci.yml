@@ -76,4 +76,6 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - run: pnpm --filter db exec prisma generate
+
       - run: pnpm build
