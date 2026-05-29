@@ -1,11 +1,11 @@
 services:
   postgres:
     volumes:
-      - /opt/taskflow/data/pgdata:/var/lib/postgresql/data
+      - ./data/pgdata:/var/lib/postgresql/data
 
   redis:
     volumes:
-      - /opt/taskflow/data/redis:/data
+      - ./data/redis:/data
 
   api:
     restart: always
@@ -18,27 +18,22 @@ services:
     environment:
       NODE_ENV: production
       JWT_SECRET: ${JWT_SECRET}
-      WEB_URL: http://81.71.27.234
+      WEB_URL: http://192.168.1.230
 
   web:
     restart: always
     environment:
       NODE_ENV: production
-      NEXT_PUBLIC_BFF_URL: http://81.71.27.234:3002/api/bff
+      NEXT_PUBLIC_BFF_URL: http://192.168.1.230:3002/api/bff
 
   nginx:
     image: nginx:alpine
     restart: always
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - web
       - bff
       - api
-
-volumes:
-  pgdata:
-  miniodata:
