@@ -232,3 +232,4 @@ docker image prune -af --filter "until=240h"
 | 容器无法启动 | `docker compose logs` 查看日志 |
 | 数据库迁移失败 | 确认 postgres 容器已 healthy，手动执行迁移 |
 | 路径无法访问 | 确认 `C:\srv\deploy` 已挂载到 Jenkins 容器 `/workspace` |
+测试cicd
