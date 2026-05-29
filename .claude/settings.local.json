@@ -65,7 +65,12 @@
       "Bash(curl -s -c /tmp/cookies_final.txt -X POST http://localhost:3002/api/bff/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"test@test.com\",\"password\":\"Test1234\"}')",
       "Bash(curl -s -c /tmp/cookies_final2.txt -X POST http://localhost:3002/api/bff/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"test@test.com\",\"password\":\"Test1234\"}')",
       "Bash(pnpm --filter @taskflow/bff build)",
-      "Bash(docker build *)"
+      "Bash(docker build *)",
+      "Bash(node *)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill /PID 22640 /F)",
+      "Bash(taskkill /PID 31048 /F)",
+      "Bash(cmd *)"
     ]
   },
   "enabledMcpjsonServers": [

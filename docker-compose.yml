@@ -71,10 +71,12 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_BFF_URL: ${NEXT_PUBLIC_BFF_URL:-http://localhost:3002/api/bff}
     ports:
       - "3000:3000"
     environment:
-      NEXT_PUBLIC_BFF_URL: http://localhost:3002/api/bff
+      NEXT_PUBLIC_BFF_URL: ${NEXT_PUBLIC_BFF_URL:-http://localhost:3002/api/bff}
     depends_on:
       - bff
 

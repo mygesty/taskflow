@@ -1,5 +1,7 @@
 import dotenv from "dotenv";
-dotenv.config({ path: "../../.env" });
+import path from "path";
+const envFile = process.env.NODE_ENV === "production" ? "prod.env" : "dev.env";
+dotenv.config({ path: path.resolve(__dirname, `../../config/${envFile}`) });
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";

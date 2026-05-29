@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3001",
-    "build": "next build",
-    "start": "next start --port 3001",
+    "dev": "node --env-file=../../config/dev.env ./node_modules/.bin/next dev --port 3001",
+    "build": "node --env-file=../../config/dev.env ./node_modules/.bin/next build",
+    "start": "node --env-file=../../config/prod.env ./node_modules/.bin/next start --port 3001",
     "lint": "eslint src/ app/",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run",

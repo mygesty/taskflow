@@ -22,9 +22,12 @@ services:
 
   web:
     restart: always
+    build:
+      args:
+        NEXT_PUBLIC_BFF_URL: ${NEXT_PUBLIC_BFF_URL}
     environment:
       NODE_ENV: production
-      NEXT_PUBLIC_BFF_URL: http://192.168.1.230:3002/api/bff
+      NEXT_PUBLIC_BFF_URL: ${NEXT_PUBLIC_BFF_URL}
 
   nginx:
     image: nginx:alpine

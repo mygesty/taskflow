@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    COMPOSE_FILES = "-f docker-compose.yml -f docker-compose.prod.yml"
+    COMPOSE_FILES = "--env-file config/prod.env -f docker-compose.yml -f docker-compose.prod.yml"
     PROJECT_DIR   = "/workspace"
   }
 
@@ -27,9 +27,7 @@ pipeline {
     stage('Deploy') {
       steps {
         dir("${PROJECT_DIR}") {
-          sh """
-            docker compose ${COMPOSE_FILES} up -d
-          """
+          sh "docker compose ${COMPOSE_FILES} up -d"
         }
       }
     }

@@ -10,11 +10,11 @@
     "./seed": "./src/seed.ts"
   },
   "scripts": {
-    "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev",
-    "db:migrate:deploy": "prisma migrate deploy",
-    "db:seed": "tsx src/seed.ts",
-    "db:studio": "prisma studio",
+    "db:generate": "node --env-file=../../config/dev.env ./node_modules/.bin/prisma generate",
+    "db:migrate": "node --env-file=../../config/dev.env ./node_modules/.bin/prisma migrate dev",
+    "db:migrate:deploy": "node --env-file=../../config/prod.env ./node_modules/.bin/prisma migrate deploy",
+    "db:seed": "node --env-file=../../config/dev.env ./node_modules/.bin/tsx src/seed.ts",
+    "db:studio": "node --env-file=../../config/dev.env ./node_modules/.bin/prisma studio",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run",

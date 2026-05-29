@@ -17,7 +17,8 @@ build/
 .env.test.local
 .env.staging.local
 .env.production.local
-!.env.example
+!config/*.env
+
 
 # 测试产物
 coverage/

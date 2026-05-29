@@ -9,6 +9,8 @@ COPY packages/shared/package.json ./packages/shared/
 RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
+ARG NEXT_PUBLIC_BFF_URL
+ENV NEXT_PUBLIC_BFF_URL=$NEXT_PUBLIC_BFF_URL
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN pnpm --filter @taskflow/shared typecheck
