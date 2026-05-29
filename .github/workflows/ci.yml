@@ -29,7 +29,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm --filter db prisma generate
+      - run: pnpm --filter db exec prisma generate
 
       - run: pnpm lint
 
@@ -103,9 +103,9 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm --filter db prisma generate
+      - run: pnpm --filter db exec prisma generate
 
-      - run: pnpm --filter db prisma migrate deploy
+      - run: pnpm --filter db exec prisma migrate deploy
 
       - run: pnpm test:integration
 
@@ -151,9 +151,9 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm --filter db prisma generate
+      - run: pnpm --filter db exec prisma generate
 
-      - run: pnpm --filter db prisma migrate deploy
+      - run: pnpm --filter db exec prisma migrate deploy
 
       - run: pnpm --filter db db:seed
 

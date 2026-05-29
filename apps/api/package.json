@@ -3,14 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs && next dev --port 3001",
-    "build": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs && next build",
-    "start": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs && next start --port 3001",
+    "dev": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs next dev --port 3001",
+    "build": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs next build",
+    "start": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs next start --port 3001",
     "lint": "eslint src/ app/",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
-    "test:integration": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs && vitest run --config vitest.integration.config.ts",
+    "test:integration": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs vitest run --config vitest.integration.config.ts",
     "clean": "rm -rf .next .turbo node_modules"
   },
   "dependencies": {

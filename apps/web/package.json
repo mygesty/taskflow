@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs && next dev --port 3000",
-    "build": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs && next build",
-    "start": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs && next start --port 3000",
+    "dev": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs next dev --port 3000",
+    "build": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs next build",
+    "start": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs next start --port 3000",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run",
