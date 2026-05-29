@@ -39,7 +39,9 @@ export const commentService = {
     const mentionedNames = parseMentions(data.content);
     if (mentionedNames.length > 0) {
       const members = await workspaceRepository.findMembers(board.workspaceId);
-      const mentionedUsers = members.filter((m) => mentionedNames.includes(m.user.name));
+      const mentionedUsers = members.filter(
+        (m: (typeof members)[number]) => mentionedNames.includes(m.user.name),
+      );
       for (const member of mentionedUsers) {
         if (member.userId === userId) continue; // don't notify self
         await prisma.notification.create({

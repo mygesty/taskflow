@@ -127,7 +127,7 @@ export const taskService = {
 
     // Find existing label or create new
     const existingLabels = await labelRepository.findByWorkspace(board.workspaceId);
-    let label = existingLabels.find((l) => l.name === data.name);
+    let label = existingLabels.find((l: (typeof existingLabels)[number]) => l.name === data.name);
     if (!label) {
       label = await labelRepository.create({ workspaceId: board.workspaceId, name: data.name, color: data.color });
     }

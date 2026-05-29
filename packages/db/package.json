@@ -10,11 +10,11 @@
     "./seed": "./src/seed.ts"
   },
   "scripts": {
-    "db:generate": "set NODE_OPTIONS=--import=../../scripts/load-env.mjs && prisma generate",
-    "db:migrate": "set NODE_OPTIONS=--import=../../scripts/load-env.mjs && prisma migrate dev",
-    "db:migrate:deploy": "set NODE_OPTIONS=--import=../../scripts/load-env.mjs && prisma migrate deploy",
-    "db:seed": "set NODE_OPTIONS=--import=../../scripts/load-env.mjs && tsx src/seed.ts",
-    "db:studio": "set NODE_OPTIONS=--import=../../scripts/load-env.mjs && prisma studio",
+    "db:generate": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs && prisma generate",
+    "db:migrate": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs && prisma migrate dev",
+    "db:migrate:deploy": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs && prisma migrate deploy",
+    "db:seed": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs && tsx src/seed.ts",
+    "db:studio": "cross-env NODE_OPTIONS=--import=../../scripts/load-env.mjs && prisma studio",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run",
