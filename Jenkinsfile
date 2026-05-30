@@ -27,9 +27,12 @@ pipeline {
       steps {
         dir("${PROJECT_DIR}") {
           sh """
-            echo "Waiting for API to be ready..."
-            sleep 10
-            docker compose ${COMPOSE_FILES} exec -T api sh -c "cd /app && npx prisma migrate deploy"
+            echo "Running database migration..."
+            docker compose ${COMPOSE_FILES} run --rm \
+              --entrypoint "" \
+              -v \$(pwd)/packages/db/prisma:/prisma:ro \
+              api \
+              sh -c "npx prisma@6 migrate deploy --schema /prisma/schema.prisma"
           """
         }
       }
