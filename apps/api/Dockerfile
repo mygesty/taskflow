@@ -23,6 +23,7 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 api
 
 COPY --from=builder /app/apps/api/public ./public
+COPY --from=builder /app/packages/db/prisma ./prisma
 COPY --from=builder --chown=api:nodejs /app/apps/api/.next/standalone ./
 COPY --from=builder --chown=api:nodejs /app/apps/api/.next/static ./apps/api/.next/static
 
